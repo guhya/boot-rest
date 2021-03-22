@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.guhya.boot.board.dao">
+	
+	<resultMap id="customMap" type="hashmap">
+		<result property="content" column="CONTENT" jdbcType="CLOB" javaType="string"/>
+	</resultMap>
+	
+	<sql id="listWhere">	
+       	WHERE 1=1
+       	<if test="condition != null and keyword != null">
+       		<if test="condition == 'title'">
+       			AND a.TITLE LIKE CONCAT(CONCAT('%',#{keyword}),'%')
+       		</if>        		
+       		<if test="condition == 'content'">
+       			AND a.CONTENT LIKE  CONCAT(CONCAT('%',#{keyword}),'%')
+       		</if>        		
+       		<if test="condition == 'all'">
+       			AND (a.TITLE LIKE CONCAT(CONCAT('%',#{keyword}),'%') OR a.CONTENT LIKE  CONCAT(CONCAT('%',#{keyword}),'%'))
+       		</if>        		
+       	</if>
+	</sql>
+	
+	<sql id="listOrder">	
+       	<if test="sortColumn != null and sortOrder != null">
+       		<if test="sortColumn == 'seq'">
+       			<if test="sortOrder == 'ASC'">ORDER BY a.SEQ ASC</if>
+       			<if test="sortOrder == 'DESC'">ORDER BY a.SEQ DESC</if>
+       		</if>
+       		<if test="sortColumn == 'title'">
+       			<if test="sortOrder == 'ASC'">ORDER BY a.TITLE ASC</if>
+       			<if test="sortOrder == 'DESC'">ORDER BY a.TITLE DESC</if>
+       		</if>
+       		<if test="sortColumn == 'subtitle'">
+       			<if test="sortOrder == 'ASC'">ORDER BY a.SUBTITLE ASC</if>
+       			<if test="sortOrder == 'DESC'">ORDER BY a.SUBTITLE DESC</if>
+       		</if>
+       		<if test="sortColumn == 'summary'">
+       			<if test="sortOrder == 'ASC'">ORDER BY a.SUMMARY ASC</if>
+       			<if test="sortOrder == 'DESC'">ORDER BY a.SUMMARY DESC</if>
+       		</if>
+       		<if test="sortColumn == 'content'">
+       			<if test="sortOrder == 'ASC'">ORDER BY a.CONTENT ASC</if>
+       			<if test="sortOrder == 'DESC'">ORDER BY a.CONTENT DESC</if>
+       		</if>
+       		<if test="sortColumn == 'author'">
+       			<if test="sortOrder == 'ASC'">ORDER BY a.AUTHOR ASC</if>
+       			<if test="sortOrder == 'DESC'">ORDER BY a.AUTHOR DESC</if>
+       		</if>
+       		<if test="sortColumn == 'regDate'">
+       			<if test="sortOrder == 'ASC'">ORDER BY a.REG_DATE ASC</if>
+       			<if test="sortOrder == 'DESC'">ORDER BY a.REG_DATE DESC</if>
+       		</if>
+       	</if>
+		<if test="sortColumn  == null or sortColumn == ''">
+       		ORDER BY a.REG_DATE DESC, a.SEQ DESC
+		</if>   
+	</sql>
+	
+	<sql id="pagingQuery">
+    	LIMIT #{startRow}, #{pageSize}
+    </sql>
+    
+	<select id="list" parameterType="hashmap" resultMap="customMap">
+		SELECT 
+			a.SEQ AS "seq"
+			, a.TITLE AS "title"
+			, a.SUBTITLE AS "subtitle"
+			, a.SUMMARY AS "summary"
+			, a.CONTENT
+			, a.AUTHOR AS "author"
+			, DATE_FORMAT(a.REG_DATE, "%Y.%m.%d %H:%i:%s") AS "regDate"
+			, a.REG_DATE AS "rawRegDate"
+		FROM BOARD a
+		<include refid="listWhere" />
+        <include refid="listOrder" />
+        <include refid="pagingQuery" />
+	</select>
+	
+	<select id="countList" 	parameterType="hashmap" resultType="int">
+        SELECT COUNT(1) FROM BOARD a        
+		<include refid="listWhere" />
+    </select> 
+	
+	<select id="select"	parameterType="hashmap" resultMap="customMap">
+    	SELECT
+			a.SEQ AS "seq"
+			, a.TITLE AS "title"
+			, a.SUBTITLE AS "subtitle"
+			, a.TITLE AS "title"
+			, a.SUMMARY AS "summary"
+			, a.CONTENT
+			, a.AUTHOR AS "author"
+			, a.REG_DATE AS "regDate"
+		FROM BOARD a
+		WHERE a.SEQ = #{seq}
+    </select>
+    
+	 <insert id="insert" parameterType="hashmap" useGeneratedKeys="true" keyProperty="seq">
+    	INSERT INTO BOARD(
+			SEQ
+			, TITLE
+			, SUBTITLE
+			, SUMMARY
+			, CONTENT
+			, AUTHOR
+			, REG_DATE
+    	)
+    	VALUES(
+ 			#{seq}
+    		, #{title}
+    		, #{subtitle}
+    		, #{summary}
+    		, #{content}
+    		, #{author}
+    		, NOW()
+    	)
+    </insert>
+    
+     <update id="update" parameterType="hashmap">
+    	UPDATE BOARD SET
+    		TITLE 			= #{title} 
+    		, SUBTITLE 			= #{subtitle} 
+    		, SUMMARY 			= #{summary} 
+    		, CONTENT 			= #{content}
+    		, AUTHOR 			= #{author} 
+    	WHERE SEQ = #{seq} 
+    </update>
+    
+    <update id="delete" parameterType="hashmap">    	
+		DELETE FROM BOARD WHERE SEQ = #{seq} 
+   	</update>   	
+   		    
+</mapper>
