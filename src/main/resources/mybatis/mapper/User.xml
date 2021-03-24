@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="User">
+	
+	<resultMap id="customMap" type="hashmap">
+		<result property="content" column="CONTENT" jdbcType="CLOB" javaType="string"/>
+	</resultMap>
+	
+	<select id="select"	parameterType="hashmap" resultMap="customMap">
+		SELECT
+			'username' AS "userId"
+			,'$2a$10$ajj6VSg4rCyJyR4zofsNuu5.WsK5gnLRU/X2WXF.QuQDbAnyaFNxy' AS "password"
+			,'Khabib' AS "firstName"
+			,'Nurmagov' AS "lastName"
+			, 'kn@plasa.com' AS "email"
+			, 'Y' AS "enabled"
+	</select>
+    
+    <select id="listUserRoles" parameterType="hashmap" resultType="string">
+    	SELECT 
+    		'ROLE_USER' AS "role"
+    </select>
+   		    
+</mapper>

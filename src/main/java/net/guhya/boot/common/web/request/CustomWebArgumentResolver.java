@@ -43,7 +43,7 @@ public class CustomWebArgumentResolver implements HandlerMethodArgumentResolver 
 		Enumeration enumeration = request.getParameterNames();
 		while (enumeration.hasMoreElements()) {
 			String key = (String) enumeration.nextElement();
-			log.info("########## Param key : " + key);
+			log.info("### Param [" + key + "] : ["+request.getParameter(key)+"]");
 			String[] values = request.getParameterValues(key);
 			if (values != null) {
 				paramBox.put(key, (values.length > 1) ? values : values[0]);

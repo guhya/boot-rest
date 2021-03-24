@@ -1,7 +1,10 @@
-package net.guhya.boot.data;
+package net.guhya.boot.common.data;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -12,6 +15,9 @@ public class JsonResult {
 	private Map<String, Object> meta;
 	private Map<String, Object> data;
 	private String status;
+	private String error;
+	private String message;
+	private LocalDateTime timestamp;
 	
 	public JsonResult(int totalRecords, 
 			int currentPage, 
@@ -28,9 +34,18 @@ public class JsonResult {
 	public JsonResult(boolean success) {
 		if(success) {
 			this.status = "success";
+			this.message = HttpStatus.OK.name().toString();
 		}else {
-			this.status = "fail";
+			this.status = "error";
+			this.error = HttpStatus.INTERNAL_SERVER_ERROR.name().toString();
+			this.message = HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase();
 		}
+	}
+
+	public JsonResult(String errorCode, Exception ex) {
+		this.status = "error";
+		this.error = errorCode;
+		this.message = ex.getMessage();
 	}
 
 	public Map<String, Object> getMeta() {
@@ -55,6 +70,30 @@ public class JsonResult {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public LocalDateTime getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(LocalDateTime timestamp) {
+		this.timestamp = timestamp;
 	}
 	
 	

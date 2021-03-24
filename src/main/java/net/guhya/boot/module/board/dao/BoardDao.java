@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BoardDao {
 	
-	protected static final String NAMESPACE =  "net.guhya.boot.board.dao.";
-	
 	@Autowired
 	private SqlSession sqlSession;
 	
@@ -21,7 +19,7 @@ public class BoardDao {
 	 * @return
 	 */
 	public List<Map<String, Object>> list(Map<String, Object> map) {
-		return sqlSession.selectList(NAMESPACE+"list", map);
+		return sqlSession.selectList("Board.list", map);
 	}
 
 	/**
@@ -30,7 +28,7 @@ public class BoardDao {
 	 * @return
 	 */
 	public int countList(Map<String, Object> parameterMap) {
-		return sqlSession.selectOne(NAMESPACE+"countList", parameterMap);
+		return sqlSession.selectOne("Board.countList", parameterMap);
 	}
 
 	/**
@@ -39,7 +37,7 @@ public class BoardDao {
 	 * @return
 	 */
 	public Map<String, Object> select(Map<String, Object> parameterMap) {
-		return sqlSession.selectOne(NAMESPACE+"select", parameterMap);
+		return sqlSession.selectOne("Board.select", parameterMap);
 	}
 	
 	/**
@@ -48,7 +46,7 @@ public class BoardDao {
 	 * @return
 	 */
 	public int insert(Map<String, Object> parameterMap) {
-		return sqlSession.insert(NAMESPACE+"insert", parameterMap);
+		return sqlSession.insert("Board.insert", parameterMap);
 	}
 	
 	/**
@@ -57,7 +55,7 @@ public class BoardDao {
 	 * @return
 	 */
 	public int update(Map<String, Object> parameterMap) {
-		return sqlSession.update(NAMESPACE+"update", parameterMap);
+		return sqlSession.update("Board.update", parameterMap);
 	}
 
 	/**
@@ -66,6 +64,6 @@ public class BoardDao {
 	 * @return
 	 */
 	public int delete(Map<String, Object> parameterMap) {
-		return sqlSession.delete(NAMESPACE+"delete", parameterMap);
+		return sqlSession.delete("Board.delete", parameterMap);
 	}
 }
