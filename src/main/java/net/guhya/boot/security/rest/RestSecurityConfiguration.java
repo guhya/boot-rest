@@ -1,4 +1,4 @@
-package net.guhya.boot.security;
+package net.guhya.boot.security.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,27 +16,27 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import net.guhya.boot.security.filter.AuthenticationFilter;
-import net.guhya.boot.security.filter.AuthorizationFilter;
-import net.guhya.boot.security.handler.LoginFailureHandler;
-import net.guhya.boot.security.handler.LoginSuccessHandler;
+import net.guhya.boot.security.rest.filter.RestAuthenticationFilter;
+import net.guhya.boot.security.rest.filter.RestAuthorizationFilter;
+import net.guhya.boot.security.rest.handler.RestLoginFailureHandler;
+import net.guhya.boot.security.rest.handler.RestLoginSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled=true, prePostEnabled=true)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private UserDetailsService userDetailService;
 	
 	@Autowired
-	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	private RestAuthenticationEntryPoint authenticationEntryPoint;
 	
 	@Autowired
-	private LoginFailureHandler failureHandler;
+	private RestLoginFailureHandler failureHandler;
 	
 	@Autowired
-	private LoginSuccessHandler successHandler;
+	private RestLoginSuccessHandler successHandler;
 
 	@Autowired
 	private AccessDeniedHandler accessDeniedHandler;
@@ -61,11 +61,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v1/users/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new AuthenticationFilter(authenticationManager()
+                .addFilter(new RestAuthenticationFilter(authenticationManager()
                 		, successHandler, failureHandler))
-                .addFilter(new AuthorizationFilter(authenticationManager()))
+                .addFilter(new RestAuthorizationFilter(authenticationManager()))
                 .exceptionHandling()
-                	.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                	.authenticationEntryPoint(authenticationEntryPoint)
                 	.accessDeniedHandler(accessDeniedHandler)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -90,7 +90,4 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return source;
     }	
     
-    public static void main(String[] args) {
-    	System.out.println(new BCryptPasswordEncoder().encode("admin"));
-    }
 }

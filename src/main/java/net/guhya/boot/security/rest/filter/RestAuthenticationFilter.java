@@ -1,4 +1,4 @@
-package net.guhya.boot.security.filter;
+package net.guhya.boot.security.rest.filter;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.guhya.boot.module.board.BoardRestController;
 
-public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
+public class RestAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 	
 	private static Logger log = LoggerFactory.getLogger(BoardRestController.class);
 
@@ -33,7 +33,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 	private AuthenticationFailureHandler failureHandler;
 	private AuthenticationSuccessHandler successHandler;
 	
-	public AuthenticationFilter(AuthenticationManager authenticationManager
+	public RestAuthenticationFilter(AuthenticationManager authenticationManager
 			, AuthenticationSuccessHandler successHandler
 			, AuthenticationFailureHandler failureHandler) {
 		

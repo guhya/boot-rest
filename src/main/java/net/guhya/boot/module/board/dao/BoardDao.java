@@ -46,7 +46,11 @@ public class BoardDao {
 	 * @return
 	 */
 	public int insert(Map<String, Object> parameterMap) {
-		return sqlSession.insert("Board.insert", parameterMap);
+		Map<String, Object> map = parameterMap;
+		int seq = sqlSession.insert("Board.insert", map);
+		seq = map.get("seq") == null ? seq : Integer.parseInt(map.get("seq").toString());
+		
+		return seq;
 	}
 	
 	/**

@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
+@JsonPropertyOrder({"timestamp","status", "meta","data", "error", "message"})
 public class JsonResult {
 	
 	private Map<String, Object> meta;
@@ -17,35 +17,48 @@ public class JsonResult {
 	private String status;
 	private String error;
 	private String message;
-	private LocalDateTime timestamp;
+	private String timestamp;
 	
+	/**
+	 * Response for list operation
+	 * @param totalRecords
+	 * @param currentPage
+	 * @param result
+	 */
 	public JsonResult(int totalRecords, 
 			int currentPage, 
 			Object result) {
-		
+		this.status = "success";
 		this.meta = new HashMap<>();
 		this.meta.put("totalRecords", String.valueOf(totalRecords));
 		this.meta.put("currentPage", String.valueOf(currentPage));
 		
 		this.data = new HashMap<>();
 		this.data.put("attributes", result);
+		this.timestamp = LocalDateTime.now().toString();
 	}
 
-	public JsonResult(boolean success) {
-		if(success) {
-			this.status = "success";
-			this.message = HttpStatus.OK.name().toString();
-		}else {
-			this.status = "error";
-			this.error = HttpStatus.INTERNAL_SERVER_ERROR.name().toString();
-			this.message = HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase();
-		}
+	/**
+	 * Response for successful operation
+	 * @param result
+	 */
+	public JsonResult(Object result) {
+		this.status = "success";
+		this.data = new HashMap<>();
+		this.data.put("attributes", result);
+		this.timestamp = LocalDateTime.now().toString();
 	}
 
+	/**
+	 * Response for error
+	 * @param errorCode
+	 * @param ex
+	 */
 	public JsonResult(String errorCode, Exception ex) {
 		this.status = "error";
 		this.error = errorCode;
 		this.message = ex.getMessage();
+		this.timestamp = LocalDateTime.now().toString();
 	}
 
 	public Map<String, Object> getMeta() {
@@ -88,11 +101,11 @@ public class JsonResult {
 		this.message = message;
 	}
 
-	public LocalDateTime getTimestamp() {
+	public String getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(LocalDateTime timestamp) {
+	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
 	}
 	

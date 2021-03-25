@@ -1,4 +1,4 @@
-package net.guhya.boot.security.service;
+package net.guhya.boot.security.rest.service;
 
 import javax.annotation.Resource;
 
@@ -12,10 +12,10 @@ import net.guhya.boot.security.data.UserInfo;
 import net.guhya.boot.security.data.UserInfoWrapper;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class RestUserDetailsServiceImpl implements UserDetailsService {
 	
 	@Resource(name = "loginService")
-	private LoginService loginService;
+	private RestLoginService loginService;
 	
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
@@ -24,6 +24,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		userInfo = loginService.buildPrincipal(userId);
 		boolean enabled = userInfo.getEnabled().equals("Y");
 		
-		return new UserInfoWrapper(userInfo.getUserId(), userInfo.getPassword(), enabled, AuthorityUtils.commaSeparatedStringToAuthorityList(userInfo.getRoleString()), userInfo);
+		return new UserInfoWrapper(
+				userInfo.getUserId()
+				, userInfo.getPassword()
+				, enabled
+				, AuthorityUtils.commaSeparatedStringToAuthorityList(userInfo.getRoleString())
+				, userInfo);
 	}
 }

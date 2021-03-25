@@ -1,4 +1,4 @@
-package net.guhya.boot.security.handler;
+package net.guhya.boot.security.rest.handler;
 
 import java.io.IOException;
 
@@ -18,7 +18,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 @Component
 public class RestAccessDeniedHandler implements AccessDeniedHandler {
 	
-	private static Logger log = LoggerFactory.getLogger(LoginSuccessHandler.class);
+	private static Logger log = LoggerFactory.getLogger(RestLoginSuccessHandler.class);
 
     @Autowired
     @Qualifier("handlerExceptionResolver") 

@@ -1,4 +1,4 @@
-package net.guhya.boot.security.filter;
+package net.guhya.boot.security.rest.filter;
 
 import java.io.IOException;
 
@@ -13,13 +13,12 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import net.guhya.boot.security.data.UserInfo;
+import net.guhya.boot.security.rest.JwtParser;
 
-public class AuthorizationFilter extends BasicAuthenticationFilter {
+public class RestAuthorizationFilter extends BasicAuthenticationFilter {
 	
-    public AuthorizationFilter(AuthenticationManager authenticationManager){
+    public RestAuthorizationFilter(AuthenticationManager authenticationManager){
         super(authenticationManager);
     }
 
@@ -41,18 +40,10 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request){
         String token = request.getHeader("Authorization");
         if(token != null){
-        	Claims body = Jwts.parser()
-            		.setSigningKey("SECRETKEY".getBytes())
-                    .parseClaimsJws(token.replace("Bearer",""))
-                    .getBody();
-        	
-        	UserInfo userInfo = new UserInfo();
-        	userInfo.setUserId((String) body.get("userId"));
-        	userInfo.setRoleString((String) body.get("role"));
-        	
+        	UserInfo userInfo = JwtParser.parseToken(token);
             if(userInfo != null){
                 return new UsernamePasswordAuthenticationToken(
-                		userInfo.getUserId()
+                		userInfo
                 		, userInfo.getPassword()
                 		, AuthorityUtils.commaSeparatedStringToAuthorityList(userInfo.getRoleString()));
             }

@@ -1,4 +1,4 @@
-package net.guhya.boot.security;
+package net.guhya.boot.security.rest;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -20,7 +20,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
  *
  */
 @Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
+public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
 
 	private static final long serialVersionUID = 7535923634069918130L;
 

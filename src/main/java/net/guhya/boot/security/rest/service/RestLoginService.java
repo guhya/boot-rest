@@ -1,4 +1,4 @@
-package net.guhya.boot.security.service;
+package net.guhya.boot.security.rest.service;
 
 import java.util.List;
 import java.util.Map;
@@ -20,12 +20,11 @@ import org.springframework.stereotype.Service;
 import net.guhya.boot.common.web.request.Box;
 import net.guhya.boot.module.user.service.UserService;
 import net.guhya.boot.security.data.UserInfo;
-import net.guhya.boot.security.data.UserInfoWrapper;
 
 @Service("loginService")
-public class LoginService {
+public class RestLoginService {
 	
-	private static Logger log = LoggerFactory.getLogger(LoginService.class);
+	private static Logger log = LoggerFactory.getLogger(RestLoginService.class);
 
 	@Autowired
 	private UserService userService;
@@ -33,11 +32,12 @@ public class LoginService {
 	public UserInfo getLoggedInUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if(auth == null) return new UserInfo();
+		
 		Object principal = auth.getPrincipal();
 		if(principal.equals("anonymousUser")) return new UserInfo();
 		
-		UserInfoWrapper loggedInUser = (UserInfoWrapper) principal;		
-		return loggedInUser.getUserInfo();
+		UserInfo loggedInUser = (UserInfo) principal;		
+		return loggedInUser;
 	}
 	
 	public UserInfo buildPrincipal(String userId) {

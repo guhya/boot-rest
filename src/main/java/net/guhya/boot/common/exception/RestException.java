@@ -52,4 +52,14 @@ public class RestException extends ResponseEntityExceptionHandler {
 		return new JsonResult(HttpStatus.FORBIDDEN.toString(), ex);
 	}
 	
+	@ExceptionHandler(Exception.class)
+	public JsonResult handleGeneralException(Exception ex
+			, HttpServletResponse response) {
+		
+		log.info("Exception : " + ex.getMessage());
+
+		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+		response.setStatus(status.value());
+		return new JsonResult(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex);
+	}
 }

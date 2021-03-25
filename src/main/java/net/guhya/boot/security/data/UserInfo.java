@@ -3,6 +3,12 @@ package net.guhya.boot.security.data;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties({"password","oldPassword"})
 public class UserInfo implements Serializable {
 
 	private static final long serialVersionUID = 4264730370993026084L;
@@ -129,7 +135,6 @@ public class UserInfo implements Serializable {
 		this.mobileNo = mobileNo;
 	}
 	
-	
 	public Date getRegDate() {
 		return regDate;
 	}
@@ -137,4 +142,44 @@ public class UserInfo implements Serializable {
 		this.regDate = regDate;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("UserInfo [userId=");
+		builder.append(userId);
+		builder.append(", password=");
+		builder.append(password);
+		builder.append(", oldPassword=");
+		builder.append(oldPassword);
+		builder.append(", firstName=");
+		builder.append(firstName);
+		builder.append(", lastName=");
+		builder.append(lastName);
+		builder.append(", enabled=");
+		builder.append(enabled);
+		builder.append(", email=");
+		builder.append(email);
+		builder.append(", membershipType=");
+		builder.append(membershipType);
+		builder.append(", affiliation=");
+		builder.append(affiliation);
+		builder.append(", countryCode=");
+		builder.append(countryCode);
+		builder.append(", country=");
+		builder.append(country);
+		builder.append(", postalCode=");
+		builder.append(postalCode);
+		builder.append(", address1=");
+		builder.append(address1);
+		builder.append(", address2=");
+		builder.append(address2);
+		builder.append(", mobileNo=");
+		builder.append(mobileNo);
+		builder.append(", regDate=");
+		builder.append(regDate);
+		builder.append(", roleString=");
+		builder.append(roleString);
+		builder.append("]");
+		return builder.toString();
+	}
 }

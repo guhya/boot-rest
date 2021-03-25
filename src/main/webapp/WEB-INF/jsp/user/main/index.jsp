@@ -17,8 +17,9 @@ $(function(){
         dataType: "JSON",
         method : "POST",
         contentType : "application/json",
-        beforeSend: function () {
-            this.pqGrid("showLoading");
+        beforeSend: function (req) {
+        	console.log("Before " + req);
+        	this.pqGrid("showLoading");
         },
         complete: function () {
             this.pqGrid("hideLoading");
@@ -216,6 +217,9 @@ $(function(){
 		recIndx		: "seq",
 		method		: "GET",
 		url 		: "/v1/boards/list",
+		beforeSend	: function(xhr, setting){
+			xhr.setRequestHeader("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsInVzZXJJZCI6InVzZXJuYW1lIiwicm9sZSI6IlJPTEVfVVNFUiIsImV4cCI6MTYxNzQyNDU0MX0.wKwSNu8rC-jrgu0PKx_rU6JYkcgaqg6G97udxkW4Aly7qznbeh7H18TaqsENamm0piruCxhETWv3CBT8lCm9Zw");
+		},
 		getData		: function(json){
 			return {
 				curPage : json.meta.currentPage,

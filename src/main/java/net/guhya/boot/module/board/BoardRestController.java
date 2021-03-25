@@ -18,6 +18,8 @@ import net.guhya.boot.common.data.JsonResult;
 import net.guhya.boot.common.web.AbstractRestController;
 import net.guhya.boot.common.web.request.Box;
 import net.guhya.boot.module.board.service.BoardService;
+import net.guhya.boot.security.data.UserInfo;
+import net.guhya.boot.security.rest.service.RestLoginService;
 
 @RestController
 @RequestMapping(value = "/v1/boards", 
@@ -30,46 +32,68 @@ public class BoardRestController extends AbstractRestController {
 	@Autowired
 	BoardService boardService;
 	
+	@Autowired
+	private RestLoginService loginService;
+
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('ROLE_USER')")
-	public JsonResult list(Box paramBox){
+	public JsonResult list(Box paramBox) throws Exception {
 		int count = boardService.countList(paramBox.getMap());
 		listPaging(paramBox, count);
 		List<Map<String, Object>> list = boardService.list(paramBox.getMap());
 		JsonResult result = new JsonResult(count, paramBox.getInt(PARAM_PAGE), list);
 		
+		UserInfo userInfo = loginService.getLoggedInUser();
+		log.info("User : " + userInfo);
+		
 		return result;
 	}
 
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
-	public JsonResult select(@PathVariable String id, Box paramBox){
+	public JsonResult select(@PathVariable String id, Box paramBox) throws Exception{
 		paramBox.put("seq", id);
 		Map<String, Object> item = boardService.select(paramBox.getMap());
-		JsonResult result = new JsonResult(1, 1, item);
+		JsonResult result = new JsonResult(item);
 		
 		return result;
 	}
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public JsonResult insert(@RequestBody Map<String, Object> body) {
-		log.debug("Body ["+body.toString()+"]");
+	public JsonResult insert(@RequestBody Map<String, Object> body) throws Exception {
 		int result = boardService.insert(body);
 		
-		return new JsonResult(result > 0);
+		if(result > 0) {
+			Box paramBox = new Box();
+			paramBox.put("seq", result);
+			Map<String, Object> item = boardService.select(paramBox.getMap());
+			return new JsonResult(item);
+		}
+		
+		throw new Exception("Operation failed");
 	}
 	
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public JsonResult update(@RequestBody Map<String, Object> body) {
+	public JsonResult update(@RequestBody Map<String, Object> body) throws Exception {
 		int result = boardService.update(body);
 		
-		return new JsonResult(result > 0);
+		if(result > 0) {
+			Map<String, Object> item = boardService.select(body);
+			return new JsonResult(item);
+		}
+		
+		throw new Exception("Operation failed");
 	}
 
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
-	public JsonResult delete(@RequestBody Map<String, Object> body) {
+	public JsonResult delete(@RequestBody Map<String, Object> body) throws Exception {
 		int result = boardService.delete(body);
+	
+		if(result > 0) {
+			Map<String, Object> item = body;
+			return new JsonResult(item);
+		}		
 		
-		return new JsonResult(result > 0);
+		throw new Exception("Operation failed");
 	}
 	
 
