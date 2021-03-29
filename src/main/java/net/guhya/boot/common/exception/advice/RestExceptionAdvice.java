@@ -1,4 +1,4 @@
-package net.guhya.boot.common.exception;
+package net.guhya.boot.common.exception.advice;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,17 +13,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import net.guhya.boot.common.data.JsonResult;
+import net.guhya.boot.common.exception.GeneralRestException;
 
 @RestControllerAdvice
-public class RestException extends ResponseEntityExceptionHandler {
+public class RestExceptionAdvice extends ResponseEntityExceptionHandler {
 	
-	private static Logger log = LoggerFactory.getLogger(RestException.class);
+	private static Logger log = LoggerFactory.getLogger(RestExceptionAdvice.class);
 
 	@ExceptionHandler(BadCredentialsException.class)
 	public JsonResult handleBadCredentialsException(BadCredentialsException ex
 			, HttpServletResponse response) {
 
-		log.info("Exception : " + ex.getMessage());
+		log.info("BadCredentialsException : " + ex.getMessage());
 		
 		HttpStatus status = HttpStatus.UNAUTHORIZED;
 		response.setStatus(status.value());
@@ -34,7 +35,7 @@ public class RestException extends ResponseEntityExceptionHandler {
 	public JsonResult handleAuthenticationException(AuthenticationException ex
 			, HttpServletResponse response) {
 		
-		log.info("Exception : " + ex.getMessage());
+		log.info("AuthenticationException : " + ex.getMessage());
 
 		HttpStatus status = HttpStatus.UNAUTHORIZED;
 		response.setStatus(status.value());
@@ -45,13 +46,24 @@ public class RestException extends ResponseEntityExceptionHandler {
 	public JsonResult handleAccessDeniedException(AccessDeniedException ex
 			, HttpServletResponse response) {
 		
-		log.info("Exception : " + ex.getMessage());
+		log.info("AccessDeniedException : " + ex.getMessage());
 
 		HttpStatus status = HttpStatus.FORBIDDEN;
 		response.setStatus(status.value());
 		return new JsonResult(HttpStatus.FORBIDDEN.toString(), ex);
 	}
 	
+	@ExceptionHandler(GeneralRestException.class)
+	public JsonResult handleGeneralRestException(GeneralRestException ex
+			, HttpServletResponse response) {
+		
+		log.info("GeneralRestException : " + ex.getMessage());
+
+		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+		response.setStatus(status.value());
+		return new JsonResult(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex);
+	}
+
 	@ExceptionHandler(Exception.class)
 	public JsonResult handleGeneralException(Exception ex
 			, HttpServletResponse response) {

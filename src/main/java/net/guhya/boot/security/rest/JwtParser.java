@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import net.guhya.boot.security.data.UserInfo;
@@ -23,7 +24,6 @@ public class JwtParser {
         Claims claims = Jwts.claims().setSubject(userInfo.getUserId());
         claims.put("userId", userInfo.getUserId() + "");
         claims.put("role", userInfo.getRoleString());
-        claims.put("enabled", userInfo.getEnabled());
 
 		String token = Jwts.builder()
 				.setSubject(userInfo.getUserId())
@@ -38,15 +38,18 @@ public class JwtParser {
 	}
 	
 	public static UserInfo parseToken(String token) {
-    	Claims body = Jwts.parser()
-        		.setSigningKey("SECRETKEY".getBytes())
-                .parseClaimsJws(token.replace("Bearer",""))
-                .getBody();
+		
+		Jws<Claims> jwt = Jwts.parser()
+					.setSigningKey("SECRETKEY".getBytes())
+					.parseClaimsJws(token.replace("Bearer",""));
+		
+		log.info("### Parsed token : " + jwt);
+		
+    	Claims body = jwt.getBody();
     	
     	UserInfo userInfo = new UserInfo();
     	userInfo.setUserId((String) body.get("userId"));
     	userInfo.setRoleString((String) body.get("role"));
-    	userInfo.setEnabled((String) body.get("enabled"));
 		
     	return userInfo;
 	}

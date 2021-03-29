@@ -43,6 +43,7 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	private static final String[] AUTH_WHITELIST = {
 			"/",
+			"/favicon.ico",
 			"/swagger-ui.html",
 			"/swagger-resources",
 			"/swagger-resources/**",

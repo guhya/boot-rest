@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.guhya.boot.common.data.JsonResult;
+import net.guhya.boot.common.exception.GeneralRestException;
 import net.guhya.boot.common.web.AbstractRestController;
 import net.guhya.boot.common.web.request.Box;
 import net.guhya.boot.module.board.service.BoardService;
@@ -25,6 +26,7 @@ import net.guhya.boot.security.rest.service.RestLoginService;
 @RequestMapping(value = "/v1/boards", 
 	produces = {"application/json", "text/json"}, 
 	consumes = MediaType.ALL_VALUE)
+@PreAuthorize("hasRole('ROLE_MANAGER')")
 public class BoardRestController extends AbstractRestController {
 
 	private static Logger log = LoggerFactory.getLogger(BoardRestController.class);
@@ -36,7 +38,6 @@ public class BoardRestController extends AbstractRestController {
 	private RestLoginService loginService;
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	@PreAuthorize("hasAnyRole('ROLE_USER')")
 	public JsonResult list(Box paramBox) throws Exception {
 		int count = boardService.countList(paramBox.getMap());
 		listPaging(paramBox, count);
@@ -69,7 +70,7 @@ public class BoardRestController extends AbstractRestController {
 			return new JsonResult(item);
 		}
 		
-		throw new Exception("Operation failed");
+		throw new GeneralRestException("Operation failed");
 	}
 	
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
@@ -81,7 +82,7 @@ public class BoardRestController extends AbstractRestController {
 			return new JsonResult(item);
 		}
 		
-		throw new Exception("Operation failed");
+		throw new GeneralRestException("Operation failed");
 	}
 
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
@@ -93,7 +94,7 @@ public class BoardRestController extends AbstractRestController {
 			return new JsonResult(item);
 		}		
 		
-		throw new Exception("Operation failed");
+		throw new GeneralRestException("Operation failed");
 	}
 	
 

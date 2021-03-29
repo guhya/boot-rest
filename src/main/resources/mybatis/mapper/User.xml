@@ -19,8 +19,9 @@
 	</select>
     
     <select id="listUserRoles" parameterType="hashmap" resultType="string">
-    	SELECT 
-    		'ROLE_USER' AS "role"
+    	SELECT 'ROLE_USER' AS "role"
+    	UNION ALL
+    	SELECT 'ROLE_MANAGER' AS "role"
     </select>
    		    
 </mapper>
