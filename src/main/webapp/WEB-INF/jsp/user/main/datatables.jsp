@@ -72,16 +72,27 @@
 	$(document).ready(function(){
 		checkHeader().done(function(val){
 			$("#myTable").DataTable({
+				pageLength : 25,
 				bProcessing : true,
 				bServerSide : true,
 				sAjaxSource : "/v1/boards/list",
 				fnServerData : function(sSource, aoData, fnCallback, oSettings) {
 					console.log(aoData);
+					var page, size;
+				    for (var i = 0; i < aoData.length; i++) {
+				        if (aoData[i].name == "iDisplayStart") page = aoData[i].value;
+				        else if (aoData[i].name == "iDisplayLength") size= aoData[i].value;
+				    	else if (aoData[i].name == "sEcho") echo = aoData[i].value;
+				    }
+					
 					oSettings.jqXHR = $.ajax({
 						dataType : "json",
 						type : "GET",
 						url : sSource,
-						data : aoData,
+						data : {
+							pageSize : size,
+							page : echo
+						},
 						success : fnCallback,
 						dataFilter : function(data){
 							var json = JSON.parse(data);
