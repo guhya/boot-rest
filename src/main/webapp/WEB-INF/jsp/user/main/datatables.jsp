@@ -187,15 +187,23 @@
 
 	var dt;
 	var cols = [
-		{"data" : "seq"},
-		{"data" : "title"},
-		{"data" : "subtitle"},
-		{"data" : "summary"},
-		{"data" : "content"},
-		{"data" : "author","className" : "text-center"},
-		{"data" : "regDate","className" : "text-center"},
+		{"data" : "seq", "width": "5%"},
+		{"data" : "title", "width": "15%"},
+		{"data" : "subtitle", "width": "10%"},
+		{"data" : "summary", "width": "15%"},
+		{
+			"className" : "", 
+			"width": "30%",
+			"render" : function (data, type, row, meta) {
+				var val = row.content.length > 35 ? row.content.substring(0, 35) + "..." : row.content;
+				return val;
+			}
+		},
+		{"data" : "author","className" : "text-center", "width": "5%"},
+		{"data" : "regDate","className" : "text-center", "width": "10%"},
 		{
 			"className" : "text-center",
+			"width": "10%",
 			"render" : function (data, type, row, meta) {
 				return "<button type='button' onclick='doEdit("+row.seq+")' class='btn btn-secondary' data-toggle='modal' data-target='#modalForm'>Edit</button>"
 				+"&nbsp;<button type='button' onclick='doDelete("+row.seq+")' class='btn btn-danger'>Delete</button>"
