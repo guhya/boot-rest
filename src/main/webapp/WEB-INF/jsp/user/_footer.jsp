@@ -5,6 +5,3 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
-<p>
-	<i>Copyright 2021 ewideplus.com</i>
-</p>
