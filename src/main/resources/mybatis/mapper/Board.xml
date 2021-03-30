@@ -18,45 +18,34 @@
        			AND a.CONTENT LIKE  CONCAT(CONCAT('%',#{keyword}),'%')
        		</if>        		
        		<if test="condition == 'all'">
-       			AND (a.TITLE LIKE CONCAT(CONCAT('%',#{keyword}),'%') OR a.CONTENT LIKE  CONCAT(CONCAT('%',#{keyword}),'%'))
+       			AND (
+       				a.TITLE LIKE CONCAT(CONCAT('%',#{keyword}),'%') 
+       				OR a.CONTENT LIKE  CONCAT(CONCAT('%',#{keyword}),'%')
+       				OR a.SUBTITLE LIKE  CONCAT(CONCAT('%',#{keyword}),'%')
+       				OR a.SUMMARY LIKE  CONCAT(CONCAT('%',#{keyword}),'%')
+       				OR a.AUTHOR LIKE  CONCAT(CONCAT('%',#{keyword}),'%')
+       				)
        		</if>        		
        	</if>
 	</sql>
 	
-	<sql id="listOrder">	
-       	<if test="sortColumn != null and sortOrder != null">
-       		<if test="sortColumn == 'seq'">
-       			<if test="sortOrder == 'ASC'">ORDER BY a.SEQ ASC</if>
-       			<if test="sortOrder == 'DESC'">ORDER BY a.SEQ DESC</if>
-       		</if>
-       		<if test="sortColumn == 'title'">
-       			<if test="sortOrder == 'ASC'">ORDER BY a.TITLE ASC</if>
-       			<if test="sortOrder == 'DESC'">ORDER BY a.TITLE DESC</if>
-       		</if>
-       		<if test="sortColumn == 'subtitle'">
-       			<if test="sortOrder == 'ASC'">ORDER BY a.SUBTITLE ASC</if>
-       			<if test="sortOrder == 'DESC'">ORDER BY a.SUBTITLE DESC</if>
-       		</if>
-       		<if test="sortColumn == 'summary'">
-       			<if test="sortOrder == 'ASC'">ORDER BY a.SUMMARY ASC</if>
-       			<if test="sortOrder == 'DESC'">ORDER BY a.SUMMARY DESC</if>
-       		</if>
-       		<if test="sortColumn == 'content'">
-       			<if test="sortOrder == 'ASC'">ORDER BY a.CONTENT ASC</if>
-       			<if test="sortOrder == 'DESC'">ORDER BY a.CONTENT DESC</if>
-       		</if>
-       		<if test="sortColumn == 'author'">
-       			<if test="sortOrder == 'ASC'">ORDER BY a.AUTHOR ASC</if>
-       			<if test="sortOrder == 'DESC'">ORDER BY a.AUTHOR DESC</if>
-       		</if>
-       		<if test="sortColumn == 'regDate'">
-       			<if test="sortOrder == 'ASC'">ORDER BY a.REG_DATE ASC</if>
-       			<if test="sortOrder == 'DESC'">ORDER BY a.REG_DATE DESC</if>
-       		</if>
+	<sql id="listOrder">
+		ORDER BY	
+       	<if test="sortColumn != null and sortColumn != ''">
+       		<if test="sortColumn == 'seq'">a.SEQ</if>
+       		<if test="sortColumn == 'title'">a.TITLE</if>
+       		<if test="sortColumn == 'subtitle'">a.SUBTITLE</if>
+       		<if test="sortColumn == 'summary'">a.SUMMARY</if>
+       		<if test="sortColumn == 'content'">a.CONTENT</if>
+       		<if test="sortColumn == 'author'">a.AUTHOR</if>
+       		<if test="sortColumn == 'regDate'">a.REG_DATE</if>
        	</if>
 		<if test="sortColumn  == null or sortColumn == ''">
-       		ORDER BY a.REG_DATE DESC, a.SEQ DESC
+       		a.REG_DATE DESC, a.SEQ
 		</if>   
+		<if test="sortOrder == 'ASC'"> ASC</if>
+		<if test="sortOrder == 'DESC'"> DESC</if>
+		<if test="sortOrder == null or sortOrder == ''"> DESC</if>
 	</sql>
 	
 	<sql id="pagingQuery">
@@ -121,7 +110,7 @@
     
      <update id="update" parameterType="hashmap">
     	UPDATE BOARD SET
-    		TITLE 			= #{title} 
+    		TITLE 				= #{title} 
     		, SUBTITLE 			= #{subtitle} 
     		, SUMMARY 			= #{summary} 
     		, CONTENT 			= #{content}
