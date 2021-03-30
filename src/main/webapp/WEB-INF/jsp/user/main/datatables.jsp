@@ -7,7 +7,7 @@
 
 <div class="row">
 	<div class="col mb-4">
-		<button type="button" data-toggle="modal" data-target="#modalForm" 
+		<button type="button" onclick="doAdd()" data-toggle="modal" data-target="#modalForm" 
 			class="btn btn-primary">Write</button>
 		<hr>
 	</div>
@@ -123,10 +123,14 @@
 	        	$.each(res.data.attributes, function(key, val) {
 	        		$("#"+key).val(val);
         	    });
-	        	dt.draw();
 	        }
 		});
 	};
+
+	var doAdd = function(){
+		document.inputForm.reset();
+	};
+	
 	
 	var doDelete = function(id){
 		$.ajax({
@@ -139,7 +143,7 @@
 	        	"seq" : id
 	        }),
 	        success : function(res){
-	        	dt.draw();
+	        	dt.draw(false);
 	        }
 		});
 	};
@@ -173,7 +177,7 @@
 	        data : JSON.stringify(data),
 	        success : function(res){
 	        	$("#modalForm").modal("hide");
-	        	dt.draw();
+	        	dt.draw(false);
 	        }
 		});
 	};
@@ -187,20 +191,20 @@
 
 	var dt;
 	var cols = [
-		{"data" : "seq", "width": "5%"},
+		{"data" : "seq", "className" : "d-none d-xl-table-cell", "width": "5%"},
 		{"data" : "title", "width": "15%"},
-		{"data" : "subtitle", "width": "10%"},
-		{"data" : "summary", "width": "15%"},
+		{"data" : "subtitle", "className" : "d-none d-xxl-table-cell", "width": "10%"},
+		{"data" : "summary", "className" : "d-none d-xxl-table-cell", "width": "15%"},
 		{
-			"className" : "", 
+			"className" : "d-none d-md-table-cell", 
 			"width": "30%",
 			"render" : function (data, type, row, meta) {
 				var val = row.content.length > 35 ? row.content.substring(0, 35) + "..." : row.content;
 				return val;
 			}
 		},
-		{"data" : "author","className" : "text-center", "width": "5%"},
-		{"data" : "regDate","className" : "text-center", "width": "10%"},
+		{"data" : "author", "className" : "text-center d-none d-xl-table-cell", "width": "5%"},
+		{"data" : "regDate", "className" : "text-center d-none d-xl-table-cell", "width": "10%"},
 		{
 			"className" : "text-center",
 			"width": "10%",
