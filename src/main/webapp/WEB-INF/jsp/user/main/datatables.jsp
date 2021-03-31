@@ -153,7 +153,7 @@
 	};
 	
 	
-	var doDelete = function(id){
+	var doDelete = function(id){		
 		$.ajax({
 	        dataType : "JSON",
 	        method : "POST",
@@ -278,8 +278,20 @@
 			"className" : "text-center",
 			"width": "10%",
 			"render" : function (data, type, row, meta) {
-				return "<button type='button' onclick='doEdit("+row.seq+")' class='btn btn-secondary' data-toggle='modal' data-target='#modalForm'>Edit</button>"
-				+"&nbsp;<button type='button' onclick='doDelete("+row.seq+")' class='btn btn-danger'>Delete</button>"
+				var pd  = "";
+					pd += "<div class=\"row\"><div class=\"col mb-2\">Are you sure ?</div></div></div>";
+					pd += "<div class=\"row\"><div class=\"col\">";
+					pd += "<a onclick=\"doDelete("+row.seq+")\" class=\"btn btn-outline-danger\">Yes</a>";
+				    pd += "&nbsp;";
+				    pd += "<a onclick=\"\" class=\"btn btn-outline-secondary\">No</a>";
+					pd += "</div></div></div>";
+
+				var el  = "";
+					el += "<a onclick='doEdit("+row.seq+")' class='btn btn-secondary' data-toggle='modal' data-target='#modalForm'>Edit</a>";
+				    el += "&nbsp;";
+				    el += "<a tabindex='0' title='Delete' data-toggle='popover' data-placement='left' data-content='"+pd+"' class='btn btn-danger'>Delete</a>";
+				
+				return el;
 			}
 		},
 	];
@@ -331,10 +343,14 @@
 				columns : cols,
 				drawCallback : function(settings) { 
 			        var response = settings.json;
+					$("[data-toggle='popover']").popover({
+						html : true,
+						sanitize : false,
+						trigger : "focus"
+					});
 			    },
 			});
 		});
-
 
 	});
 </script>
