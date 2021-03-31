@@ -30,6 +30,10 @@
 		</table>
 	</div>
 </div>	
+<div class="row">
+	<div class="col mb-4">
+	</div>
+</div>
 
 <div id="modalForm" class="modal" aria-hidden="true" tabindex="-1" aria-labelledby="modalTitle">
 	<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
@@ -71,10 +75,19 @@
 							<textarea class="form-control" name="content" id="content" rows="6" required></textarea>
 						</div>
 					</div>
-					<div class="form-group">
-						<input type="file" class="form-control-file" id="file">
-					</div>
 					<input type="submit" name="submitHandler" style="display:none"/>
+				</form>
+				<form id="fileForm" name="fileForm" enctype="multipart/form-data">
+					<div class="form-row" id="mainImageConGroup">
+						<div class="col-md-3 mb-3">
+							<img id="mainImageCon" src="" class="img-thumbnail">						
+              			</div>
+					</div>
+					<div class="form-row" id="mainImageGroup">
+						<div class="col-md-12 mb-3">
+                			<input type="file" id="mainImage" class="form-control-file" name="mainImage">
+              			</div>
+					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
@@ -106,29 +119,37 @@
 		        }
 			});
 		}else{
-			var d = new $.Deferred();
 			req.setRequestHeader("Authorization", "Bearer " + authHeader.trim());
-			return d.promise();
 		}
 	};
 
 	var doEdit = function(id){
+		document.inputForm.reset();
+		document.fileForm.reset();
 		$.ajax({
 	        dataType : "JSON",
 	        method : "GET",
-	        global : false,
 	        contentType : "application/json",
 	        url : "/v1/boards/get/"+id,
 	        success : function(res){
 	        	$.each(res.data.attributes, function(key, val) {
-	        		$("#"+key).val(val);
+	        		if($("#"+key).prop("type") != "file"){
+	        			$("#"+key).val(val);
+	        		}
         	    });
+	        	if(res.data.attributes.mainImage != undefined){
+		        	$("#mainImageCon").attr("src", "/resources/" + res.data.attributes.mainImage);
+	        		$("#mainImageConGroup").show();
+	        	}else{
+	        		$("#mainImageConGroup").hide();
+	        	}
 	        }
 		});
 	};
 
 	var doAdd = function(){
 		document.inputForm.reset();
+		document.fileForm.reset();
 	};
 	
 	
@@ -136,7 +157,6 @@
 		$.ajax({
 	        dataType : "JSON",
 	        method : "POST",
-	        global : false,
 	        contentType : "application/json",
 	        url : "/v1/boards/delete",
 	        data : JSON.stringify({
@@ -149,35 +169,83 @@
 	};
 	
 	var doSubmit = function(){
-		
 		var frm = document.inputForm;
 		if (!frm.checkValidity()) {
 			frm.submitHandler.click();
 			return;
 		}
 		
+		var frm = document.fileForm;
+		if(frm.file && frm.file.value !== ""){
+			if (frm.file.value.match(/(.jpg|.jpeg|.gif|.png)$/i) === null){
+				return;
+			}
+		}
+
+		doSave().then(function(res){
+			var data = {
+					"ownerSeq" : res.data.attributes.seq,
+					"channel" : "board",
+					"category" : "mainImage"
+			};
+			doUpload(data).always(function(res){
+				console.log("Cleaning up, doesn't matter if error");
+				$("#modalForm").modal("hide");
+				dt.draw(false);
+			});
+		});
+	};
+	
+	var doSave = function(){
 		var data = {};
 		var arr = $("#inputForm").serializeArray();
 		for(el in arr){
 			if(arr[el].name == "seq" && arr[el].value == "") continue;
 			data[arr[el].name] = arr[el].value;
 		}
+		
 		var url = "";
 		if(data.seq != undefined)
 			url = "/v1/boards/update";
 		else
 			url = "/v1/boards/create";
 		
-		$.ajax({
+		return $.ajax({
 	        dataType : "JSON",
 	        method : "POST",
-	        global : false,
 	        contentType : "application/json",
 	        url : url,
 	        data : JSON.stringify(data),
 	        success : function(res){
-	        	$("#modalForm").modal("hide");
-	        	dt.draw(false);
+	        	console.log("Saving data success");
+	        }
+		});
+	};
+	
+	var doUpload = function(data){
+		var formData = new FormData();
+		var mainImage = $("#mainImage")[0].files;
+		if(mainImage.length > 0) {
+			for(key in data){
+				if (data.hasOwnProperty(key))
+					formData.append(key, data[key]);
+			}
+			formData.append("mainImage", mainImage[0]);
+		}else{
+			return $.Deferred().resolve().promise();
+		}
+		
+		console.log(data, formData);
+		
+		return $.ajax({
+	        dataType : "JSON",
+	        method : "POST",
+	        url : "/v1/files/upload",
+	        data : formData,
+	        contentType : false,
+	        processData: false,
+	        success : function(res){
+	        	console.log("Uploading file success");
 	        }
 		});
 	};
@@ -187,14 +255,15 @@
 			checkHeader(req);
 		}
 	});
+	
 	var ewdebug = {};
 
 	var dt;
 	var cols = [
 		{"data" : "seq", "className" : "d-none d-xl-table-cell", "width": "5%"},
 		{"data" : "title", "width": "15%"},
-		{"data" : "subtitle", "className" : "d-none d-xxl-table-cell", "width": "10%"},
-		{"data" : "summary", "className" : "d-none d-xxl-table-cell", "width": "15%"},
+		{"data" : "subtitle", "className" : "d-none d-xl-table-cell", "width": "10%"},
+		{"data" : "summary", "className" : "d-none d-xl-table-cell", "width": "15%"},
 		{
 			"className" : "d-none d-md-table-cell", 
 			"width": "30%",
@@ -265,5 +334,7 @@
 			    },
 			});
 		});
+
+
 	});
 </script>

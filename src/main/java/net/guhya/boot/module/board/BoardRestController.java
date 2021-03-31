@@ -97,6 +97,4 @@ public class BoardRestController extends AbstractRestController {
 		throw new GeneralRestException("Operation failed");
 	}
 	
-
-
 }

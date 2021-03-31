@@ -83,6 +83,12 @@
 			, a.CONTENT
 			, a.AUTHOR AS "author"
 			, a.REG_DATE AS "regDate"
+			, (SELECT SEQ FROM FILE 
+				WHERE CHANNEL = 'board' AND CATEGORY = 'mainImage' 
+				AND OWNER_SEQ = a.SEQ LIMIT 1) AS "mainImageSeq"
+			, (SELECT CONCAT(PATH, '/', NAME) FROM FILE 
+				WHERE CHANNEL = 'board' AND CATEGORY = 'mainImage' 
+				AND OWNER_SEQ = a.SEQ LIMIT 1) AS "mainImage"
 		FROM BOARD a
 		WHERE a.SEQ = #{seq}
     </select>

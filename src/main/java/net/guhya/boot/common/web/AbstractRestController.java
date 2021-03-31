@@ -1,8 +1,14 @@
 
 package net.guhya.boot.common.web;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+
 import net.guhya.boot.common.web.request.Box;
 
+@PropertySource({ 
+  "classpath:/application${env:}.properties"
+})
 public abstract class AbstractRestController {
 	
 	public static final int PAGE_SIZE_VAL			= 10;
@@ -25,6 +31,9 @@ public abstract class AbstractRestController {
 	
 	public static final String SUCCESS				= "success";
 	public static final String FAIL					= "fail";
+
+	@Value("${path.upload}")
+	public String PATH_UPLOAD;
 
 	/**
 	 * Prepare parameter to be used in paging, adjust the start row
