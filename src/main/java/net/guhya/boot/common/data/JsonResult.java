@@ -19,6 +19,9 @@ public class JsonResult {
 	private String message;
 	private String timestamp;
 	
+	public JsonResult() {
+	}
+	
 	/**
 	 * Response for list operation
 	 * @param totalRecords

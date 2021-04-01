@@ -42,12 +42,7 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private AccessDeniedHandler accessDeniedHandler;
 
 	private static final String[] AUTH_WHITELIST = {
-			"/",
-			"/favicon.ico",
-			"/swagger-ui.html",
-			"/swagger-resources",
-			"/swagger-resources/**",
-			"/resources/**"
+			"/v1/users/login"
 	};
 		
 	/**
@@ -57,9 +52,10 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) 
 			throws Exception {
 		
-        http.cors().and().csrf().disable().authorizeRequests()
+        http.antMatcher("/v1/**")
+        	.cors().and().csrf().disable()
+        	.authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                .antMatchers("/v1/users/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new RestAuthenticationFilter(authenticationManager()

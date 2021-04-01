@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.guhya.boot.common.data.JsonResult;
 import net.guhya.boot.common.exception.GeneralRestException;
+import net.guhya.boot.common.exception.ItemNotFoundException;
 import net.guhya.boot.common.web.AbstractRestController;
 import net.guhya.boot.common.web.request.Box;
 import net.guhya.boot.module.board.service.BoardService;
@@ -54,9 +55,11 @@ public class BoardRestController extends AbstractRestController {
 	public JsonResult select(@PathVariable String id, Box paramBox) throws Exception{
 		paramBox.put("seq", id);
 		Map<String, Object> item = boardService.select(paramBox.getMap());
-		JsonResult result = new JsonResult(item);
+		if(item != null) {
+			return new JsonResult(item);
+		}
 		
-		return result;
+		throw new ItemNotFoundException("Item not found");
 	}
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)

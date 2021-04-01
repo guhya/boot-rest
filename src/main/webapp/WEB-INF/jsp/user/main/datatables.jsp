@@ -7,8 +7,7 @@
 
 <div class="row">
 	<div class="col mb-4">
-		<button type="button" onclick="doAdd()" data-toggle="modal" data-target="#modalForm" 
-			class="btn btn-primary">Write</button>
+		<button type="button" onclick="doAdd()" class="btn btn-primary">Write</button>
 		<hr>
 	</div>
 </div>
@@ -47,7 +46,7 @@
 			<div class="modal-body">
 				<form id="inputForm" name="inputForm">
 					<div class="form-row">
-						<input type="hidden" class="form-control" name="seq" id="seq" value="" required>
+						<input type="text" style="display:none;" name="seq" id="seq" value="">
 						<div class="col-md-8 mb-3">
 							<label>Title</label> 
 							<input type="text" class="form-control" name="title" id="title" value="" required>
@@ -122,10 +121,16 @@
 			req.setRequestHeader("Authorization", "Bearer " + authHeader.trim());
 		}
 	};
-
-	var doEdit = function(id){
+	
+	var resetForm = function(){
 		document.inputForm.reset();
 		document.fileForm.reset();
+    	$("#mainImageCon").attr("src", "");
+		$("#mainImageConGroup").show();
+	};
+
+	var doEdit = function(id){
+		resetForm();
 		$.ajax({
 	        dataType : "JSON",
 	        method : "GET",
@@ -143,13 +148,14 @@
 	        	}else{
 	        		$("#mainImageConGroup").hide();
 	        	}
+	    		$("#modalForm").modal("show");
 	        }
 		});
 	};
 
 	var doAdd = function(){
-		document.inputForm.reset();
-		document.fileForm.reset();
+		resetForm();
+		$("#modalForm").modal("show");
 	};
 	
 	
@@ -279,15 +285,15 @@
 			"width": "10%",
 			"render" : function (data, type, row, meta) {
 				var pd  = "";
-					pd += "<div class=\"row\"><div class=\"col mb-2\">Are you sure ?</div></div></div>";
-					pd += "<div class=\"row\"><div class=\"col\">";
-					pd += "<a onclick=\"doDelete("+row.seq+")\" class=\"btn btn-outline-danger\">Yes</a>";
+					pd += "<div class=\"row\"><div class=\"col\">Are you sure you want to delete ?<hr></div></div></div>";
+					pd += "<div class=\"row\"><div class=\"col text-right\">";
+					pd += "<a onclick=\"doDelete("+row.seq+")\" class=\"btn btn-outline-danger btn-sm\">Yes</a>";
 				    pd += "&nbsp;";
-				    pd += "<a onclick=\"\" class=\"btn btn-outline-secondary\">No</a>";
+				    pd += "<a onclick=\"\" class=\"btn btn-outline-secondary btn-sm\">No</a>";
 					pd += "</div></div></div>";
 
 				var el  = "";
-					el += "<a onclick='doEdit("+row.seq+")' class='btn btn-secondary' data-toggle='modal' data-target='#modalForm'>Edit</a>";
+					el += "<a onclick='doEdit("+row.seq+")' class='btn btn-secondary'>Edit</a>";
 				    el += "&nbsp;";
 				    el += "<a tabindex='0' title='Delete' data-toggle='popover' data-placement='left' data-content='"+pd+"' class='btn btn-danger'>Delete</a>";
 				
@@ -341,6 +347,9 @@
 					})
 				},
 				columns : cols,
+				language : {
+		            	processing : "Loading..."
+		            },				
 				drawCallback : function(settings) { 
 			        var response = settings.json;
 					$("[data-toggle='popover']").popover({

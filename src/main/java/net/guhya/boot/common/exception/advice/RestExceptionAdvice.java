@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import net.guhya.boot.common.data.JsonResult;
 import net.guhya.boot.common.exception.GeneralRestException;
+import net.guhya.boot.common.exception.ItemNotFoundException;
 
 @RestControllerAdvice
 public class RestExceptionAdvice extends ResponseEntityExceptionHandler {
@@ -53,6 +54,17 @@ public class RestExceptionAdvice extends ResponseEntityExceptionHandler {
 		return new JsonResult(HttpStatus.FORBIDDEN.toString(), ex);
 	}
 	
+	@ExceptionHandler(ItemNotFoundException.class)
+	public JsonResult handleItemNotFoundException(ItemNotFoundException ex
+			, HttpServletResponse response) {
+		
+		log.info("ItemNotFoundException : " + ex.getMessage());
+
+		HttpStatus status = HttpStatus.NOT_FOUND;
+		response.setStatus(status.value());
+		return new JsonResult(HttpStatus.NOT_FOUND.toString(), ex);
+	}
+
 	@ExceptionHandler(GeneralRestException.class)
 	public JsonResult handleGeneralRestException(GeneralRestException ex
 			, HttpServletResponse response) {

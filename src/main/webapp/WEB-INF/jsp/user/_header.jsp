@@ -8,7 +8,7 @@
 <header>
 	<!-- Jumbotron -->
 	<div class="p-5 text-center">
-		<h1 class="mb-3">Datatables</h1>
+		<h1 class="mb-3">Spring Boot REST</h1>
 	</div>
 	<!-- Jumbotron -->
 </header>
