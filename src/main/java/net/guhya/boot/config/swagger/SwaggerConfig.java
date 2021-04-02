@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.classmate.TypeResolver;
 
-import net.guhya.boot.common.web.request.Box;
+import net.guhya.boot.common.data.Box;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;

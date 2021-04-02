@@ -1,26 +1,33 @@
-package net.guhya.boot.module.board.service;
+package net.guhya.boot.common.service;
 
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import net.guhya.boot.module.board.dao.BoardDao;
+import net.guhya.boot.common.dao.GenericDao;
 
-@Service
-public class BoardService {
+@Service(value = "genericService")
+public class GenericService<T> {
 
-	@Autowired
-	BoardDao boardDao;
+	private GenericDao<T> dao;
 
+	public GenericService(@Qualifier("genericDao") GenericDao<T> dao) {
+		this.dao = dao;
+	}
+
+	public void setEntityName(String entityName) {
+		this.dao.setNamespace(entityName);
+	}
+	
 	/**
 	 * Select 
 	 * @param paramMap
 	 * @return
 	 */
 	public Map<String, Object> select(Map<String, Object> parameterMap){
-		return boardDao.select(parameterMap);
+		return dao.select(parameterMap);
 	}
 	
 	/**
@@ -29,7 +36,7 @@ public class BoardService {
 	 * @return
 	 */
 	public List<Map<String, Object>> list(Map<String, Object> parameterMap) {
-		return boardDao.list(parameterMap);
+		return dao.list(parameterMap);
 	}
 
 	/**
@@ -38,7 +45,7 @@ public class BoardService {
 	 * @return
 	 */
 	public int countList(Map<String, Object> parameterMap) {
-		return boardDao.countList(parameterMap);
+		return dao.countList(parameterMap);
 	}
 
 	/**
@@ -47,7 +54,7 @@ public class BoardService {
 	 * @return
 	 */
 	public int insert(Map<String, Object> parameterMap) {
-		return boardDao.insert(parameterMap);
+		return dao.insert(parameterMap);
 	}
 	
 	/**
@@ -56,7 +63,7 @@ public class BoardService {
 	 * @return
 	 */
 	public int update(Map<String, Object> parameterMap) {
-		return boardDao.update(parameterMap);
+		return dao.update(parameterMap);
 	}
 
 	/**
@@ -65,6 +72,6 @@ public class BoardService {
 	 * @return
 	 */
 	public int delete(Map<String, Object> parameterMap) {
-		return boardDao.delete(parameterMap);
+		return dao.delete(parameterMap);
 	}	
 }

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import net.guhya.boot.common.web.request.Box;
+import net.guhya.boot.common.data.Box;
 
 
 public class WebUtil {

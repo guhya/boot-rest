@@ -13,33 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.guhya.boot.common.dao;
 
-package net.guhya.boot.module.user.dao;
-
-import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
-import net.guhya.boot.common.dao.GenericDao;
-import net.guhya.boot.common.data.Box;
+import net.guhya.boot.common.data.FileBox;
 
-@Repository(value = "userDao")
-public class UserDao extends GenericDao<Box>{
-	
-	public UserDao(SqlSession sqlSession) {
+@Repository(value = "fileDao")
+public class FileDao extends GenericDao<FileBox> {
+
+	public FileDao(SqlSession sqlSession) {
 		super(sqlSession);
 	}
 
 	/**
-	 * Return roles of a particular user
-	 * @param paramBox HTTP request parameters wrapped in HashMap
-	 * @return List of user roles
-	 * @throws Exception
+	 * Get an item based on user parameter
+	 * @param paramBox HTTP Request parameters wrapped in HashMap
+	 * @return HashMap item
+	 * @exception Exception
 	 */
-	public List<String> listUserRoles(Map<String, Object> map) throws Exception {
-		return sqlSession.selectList(namespace + "listUserRoles", map);
+	public Map<String, Object> selectByOwner(Map<String, Object> parameterMap) throws Exception {
+		return sqlSession.selectOne(namespace + "selectByOwner", parameterMap);
 	}
-	
+
 }

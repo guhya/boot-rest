@@ -1,4 +1,4 @@
-package net.guhya.boot.common.web.request;
+package net.guhya.boot.common.data;
 
 import org.springframework.web.multipart.MultipartFile;
 

@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import net.guhya.boot.common.data.Box;
+import net.guhya.boot.common.data.FileBox;
 import net.guhya.boot.common.data.JsonResult;
 import net.guhya.boot.common.exception.GeneralRestException;
+import net.guhya.boot.common.service.FileService;
 import net.guhya.boot.common.web.AbstractRestController;
-import net.guhya.boot.common.web.request.Box;
-import net.guhya.boot.common.web.request.FileBox;
-import net.guhya.boot.module.file.service.FileService;
 
 @RestController
 @RequestMapping(value = "/v1/files", 
@@ -35,9 +35,12 @@ public class FileRestController extends AbstractRestController {
 
 	private static Logger log = LoggerFactory.getLogger(FileRestController.class);
 	
-	@Autowired
 	FileService fileService;
 	
+	public FileRestController(@Qualifier("fileService") FileService fileService) {
+		this.fileService = fileService;
+	}
+
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public JsonResult upload(Box paramBox) throws Exception {
 		
@@ -76,7 +79,7 @@ public class FileRestController extends AbstractRestController {
 			}
 			
 			paramBox.put("seq", lastId);
-			item = fileService.selectById(paramBox.getMap());
+			item = fileService.select(paramBox.getMap());
 			
 		} catch (Exception ex) {
 			throw new GeneralRestException("Operation failed");

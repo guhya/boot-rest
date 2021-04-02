@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Service;
 
-import net.guhya.boot.common.web.request.Box;
+import net.guhya.boot.common.data.Box;
 import net.guhya.boot.module.user.service.UserService;
 import net.guhya.boot.security.data.UserInfo;
 
@@ -49,15 +49,15 @@ public class RestLoginService {
 		UserInfo userInfo = new UserInfo();
 		
 		try {
-			Map<String, String> result = userService.select(userBox);
-			List<String> userRoles = userService.listUserRoles(userBox);
+			Map<String, Object> result = userService.select(userBox.getMap());
+			List<String> userRoles = userService.listUserRoles(userBox.getMap());
 			
 			String sRoles 			= StringUtils.join(userRoles, ",");
-			String password			= result.get("password");
-			String firstName		= result.get("firstName");
-			String lastName			= result.get("lastName");
-			String email			= result.get("email");
-			String enabled			= result.get("enabled");
+			String password			= (String) result.get("password");
+			String firstName		= (String) result.get("firstName");
+			String lastName			= (String) result.get("lastName");
+			String email			= (String) result.get("email");
+			String enabled			= (String) result.get("enabled");
 					
 			userInfo.setUserId(userId);
 			userInfo.setPassword(password);

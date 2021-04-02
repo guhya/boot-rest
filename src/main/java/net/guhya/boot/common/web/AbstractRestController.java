@@ -4,7 +4,7 @@ package net.guhya.boot.common.web;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 
-import net.guhya.boot.common.web.request.Box;
+import net.guhya.boot.common.data.Box;
 
 @PropertySource({ 
   "classpath:/application${env:}.properties"

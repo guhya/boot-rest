@@ -1,25 +1,32 @@
-package net.guhya.boot.module.board.dao;
+package net.guhya.boot.common.dao;
 
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public class BoardDao {
+@Repository(value = "genericDao")
+public class GenericDao<T> {
 	
-	@Autowired
-	private SqlSession sqlSession;
+	protected SqlSession sqlSession;
+	protected String namespace = "";
 	
+	public GenericDao(SqlSession sqlSession) {
+		this.sqlSession = sqlSession;
+	}
+	
+	public void setNamespace(String className) {
+		this.namespace = "net.guhya.boot.module."+className+".dao.Mapper.";
+	}
+
 	/**
 	 * List 
 	 * @param map
 	 * @return
 	 */
 	public List<Map<String, Object>> list(Map<String, Object> map) {
-		return sqlSession.selectList("Board.list", map);
+		return sqlSession.selectList(namespace + "list", map);
 	}
 
 	/**
@@ -28,7 +35,7 @@ public class BoardDao {
 	 * @return
 	 */
 	public int countList(Map<String, Object> parameterMap) {
-		return sqlSession.selectOne("Board.countList", parameterMap);
+		return sqlSession.selectOne(namespace + "countList", parameterMap);
 	}
 
 	/**
@@ -37,7 +44,7 @@ public class BoardDao {
 	 * @return
 	 */
 	public Map<String, Object> select(Map<String, Object> parameterMap) {
-		return sqlSession.selectOne("Board.select", parameterMap);
+		return sqlSession.selectOne(namespace + "select", parameterMap);
 	}
 	
 	/**
@@ -47,7 +54,7 @@ public class BoardDao {
 	 */
 	public int insert(Map<String, Object> parameterMap) {
 		Map<String, Object> map = parameterMap;
-		int seq = sqlSession.insert("Board.insert", map);
+		int seq = sqlSession.insert(namespace + "insert", map);
 		seq = map.get("seq") == null ? seq : Integer.parseInt(map.get("seq").toString());
 		
 		return seq;
@@ -59,7 +66,7 @@ public class BoardDao {
 	 * @return
 	 */
 	public int update(Map<String, Object> parameterMap) {
-		return sqlSession.update("Board.update", parameterMap);
+		return sqlSession.update(namespace + "update", parameterMap);
 	}
 
 	/**
@@ -68,6 +75,6 @@ public class BoardDao {
 	 * @return
 	 */
 	public int delete(Map<String, Object> parameterMap) {
-		return sqlSession.delete("Board.delete", parameterMap);
+		return sqlSession.delete(namespace + "delete", parameterMap);
 	}
 }

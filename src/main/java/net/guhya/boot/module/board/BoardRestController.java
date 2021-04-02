@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,14 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.guhya.boot.common.data.Box;
 import net.guhya.boot.common.data.JsonResult;
 import net.guhya.boot.common.exception.GeneralRestException;
 import net.guhya.boot.common.exception.ItemNotFoundException;
+import net.guhya.boot.common.service.GenericService;
 import net.guhya.boot.common.web.AbstractRestController;
-import net.guhya.boot.common.web.request.Box;
-import net.guhya.boot.module.board.service.BoardService;
-import net.guhya.boot.security.data.UserInfo;
-import net.guhya.boot.security.rest.service.RestLoginService;
 
 @RestController
 @RequestMapping(value = "/v1/boards", 
@@ -32,11 +30,14 @@ public class BoardRestController extends AbstractRestController {
 
 	private static Logger log = LoggerFactory.getLogger(BoardRestController.class);
 	
-	@Autowired
-	BoardService boardService;
+	GenericService<Box> boardService;
 	
-	@Autowired
-	private RestLoginService loginService;
+	public BoardRestController(@Qualifier("genericService") GenericService<Box> boardService) {
+		this.boardService = boardService;
+		this.boardService.setEntityName("board");
+		
+		log.info("Board rest controller initialized");
+	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public JsonResult list(Box paramBox) throws Exception {
@@ -44,9 +45,6 @@ public class BoardRestController extends AbstractRestController {
 		listPaging(paramBox, count);
 		List<Map<String, Object>> list = boardService.list(paramBox.getMap());
 		JsonResult result = new JsonResult(count, paramBox.getInt(PARAM_PAGE), list);
-		
-		UserInfo userInfo = loginService.getLoggedInUser();
-		log.info("User : " + userInfo);
 		
 		return result;
 	}

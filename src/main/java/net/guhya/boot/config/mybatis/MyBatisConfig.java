@@ -17,7 +17,9 @@ import com.zaxxer.hikari.HikariDataSource;
 
 
 @Configuration
-@PropertySource("classpath:/application.properties")
+@PropertySource({ 
+	  "classpath:/application${env:}.properties"
+})
 public class MyBatisConfig {
 	
 	@Autowired
