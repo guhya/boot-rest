@@ -22,8 +22,8 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
         	.ignoredParameterTypes(Box.class)
         	.select()
-            .apis(RequestHandlerSelectors.any())
-            .paths(PathSelectors.regex("/.*"))
+            .apis(RequestHandlerSelectors.basePackage("net.guhya.boot"))
+            .paths(PathSelectors.ant("/v1/**"))
             .build()
             .apiInfo(apiEndPointsInfo());
     }
@@ -31,7 +31,9 @@ public class SwaggerConfig {
     private ApiInfo apiEndPointsInfo() {
 
         return new ApiInfoBuilder().title("Spring Boot REST API")
-            .description("Grid App")
+            .description("Spring Boot, Hashmap based dto, MyBatis, "
+            		+ "Spring Security with Json Web Token, "
+            		+ "Datatables CRUD for rapid application development")
             .license("Apache 2.0")
             .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
             .version("1.0.0")
