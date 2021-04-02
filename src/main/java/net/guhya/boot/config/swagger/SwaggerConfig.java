@@ -1,7 +1,9 @@
 package net.guhya.boot.config.swagger;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 import net.guhya.boot.common.data.Box;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -14,15 +16,21 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
+@PropertySource({ 
+	  "classpath:/application${env:}.properties"
+})
 public class SwaggerConfig {
-	 
+	
+    @Value("${app.package}")
+	private String basePackage;
+	
 	@Bean
     public Docket api() {
 		
         return new Docket(DocumentationType.SWAGGER_2)
         	.ignoredParameterTypes(Box.class)
         	.select()
-            .apis(RequestHandlerSelectors.basePackage("net.guhya.boot"))
+            .apis(RequestHandlerSelectors.basePackage(basePackage))
             .paths(PathSelectors.ant("/v1/**"))
             .build()
             .apiInfo(apiEndPointsInfo());

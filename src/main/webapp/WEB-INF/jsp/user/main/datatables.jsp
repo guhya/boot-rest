@@ -97,9 +97,9 @@
 </div>
 
 <script>
-	var authHeader = "";
+	var authHeader = getCookie("token");
 	var checkHeader = function(req){
-		if(authHeader == ""){
+		if(authHeader == undefined || authHeader == ""){
 			return $.ajax({
 		        dataType : "JSON",
 		        method : "POST",
@@ -115,10 +115,12 @@
 		        }),
 		        success : function(res){
 		        	authHeader = res.data.attributes.token;
+		        	setCookie("token", authHeader, 1);
 		        }
 			});
 		}else{
-			req.setRequestHeader("Authorization", "Bearer " + authHeader.trim());
+			if (req != undefined) req.setRequestHeader("Authorization", "Bearer " + authHeader.trim());
+			return $.Deferred().resolve().promise();
 		}
 	};
 	
