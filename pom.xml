@@ -68,6 +68,7 @@
         </dependency>
 		<!-- DB end -->
         
+        <!-- Swagger API docs -->
         <dependency>
 		    <groupId>io.springfox</groupId>
 		    <artifactId>springfox-swagger2</artifactId>

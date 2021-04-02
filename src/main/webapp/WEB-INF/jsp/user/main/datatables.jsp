@@ -143,7 +143,7 @@
 	        		}
         	    });
 	        	if(res.data.attributes.mainImage != undefined){
-		        	$("#mainImageCon").attr("src", "/resources/" + res.data.attributes.mainImage);
+		        	$("#mainImageCon").attr("src", "/public/" + res.data.attributes.mainImage);
 	        		$("#mainImageConGroup").show();
 	        	}else{
 	        		$("#mainImageConGroup").hide();

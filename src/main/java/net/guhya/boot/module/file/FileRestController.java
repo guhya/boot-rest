@@ -35,7 +35,7 @@ public class FileRestController extends AbstractRestController {
 
 	private static Logger log = LoggerFactory.getLogger(FileRestController.class);
 	
-	FileService fileService;
+	private FileService fileService;
 	
 	public FileRestController(@Qualifier("fileService") FileService fileService) {
 		this.fileService = fileService;

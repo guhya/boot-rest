@@ -3,8 +3,6 @@ package net.guhya.boot.config.swagger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.fasterxml.classmate.TypeResolver;
-
 import net.guhya.boot.common.data.Box;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -20,7 +18,6 @@ public class SwaggerConfig {
 	 
 	@Bean
     public Docket api() {
-		TypeResolver typeResolver = new TypeResolver(); 
 		
         return new Docket(DocumentationType.SWAGGER_2)
         	.ignoredParameterTypes(Box.class)

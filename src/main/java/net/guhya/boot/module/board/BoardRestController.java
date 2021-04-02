@@ -30,7 +30,7 @@ public class BoardRestController extends AbstractRestController {
 
 	private static Logger log = LoggerFactory.getLogger(BoardRestController.class);
 	
-	GenericService<Box> boardService;
+	private GenericService<Box> boardService;
 	
 	public BoardRestController(@Qualifier("genericService") GenericService<Box> boardService) {
 		this.boardService = boardService;
