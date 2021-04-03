@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import net.guhya.boot.common.dao.GenericDao;
+import net.guhya.boot.common.data.AbstractData;
 
 @Service(value = "genericService")
-public class GenericService<T> {
+public class GenericService<T extends AbstractData> {
 
 	private GenericDao<T> dao;
 
@@ -26,8 +27,8 @@ public class GenericService<T> {
 	 * @param paramMap
 	 * @return
 	 */
-	public Map<String, Object> select(Map<String, Object> parameterMap){
-		return dao.select(parameterMap);
+	public T select(T dto){
+		return dao.select(dto);
 	}
 	
 	/**
@@ -35,7 +36,7 @@ public class GenericService<T> {
 	 * @param map
 	 * @return
 	 */
-	public List<Map<String, Object>> list(Map<String, Object> parameterMap) {
+	public List<T> list(Map<String, Object> parameterMap) {
 		return dao.list(parameterMap);
 	}
 
@@ -53,8 +54,8 @@ public class GenericService<T> {
 	 * @param parameterMap
 	 * @return
 	 */
-	public int insert(Map<String, Object> parameterMap) {
-		return dao.insert(parameterMap);
+	public long insert(T dto) {
+		return dao.insert(dto);
 	}
 	
 	/**
@@ -62,8 +63,8 @@ public class GenericService<T> {
 	 * @param parameterMap
 	 * @return
 	 */
-	public int update(Map<String, Object> parameterMap) {
-		return dao.update(parameterMap);
+	public int update(T dto) {
+		return dao.update(dto);
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class GenericService<T> {
 	 * @param parameterMap
 	 * @return
 	 */
-	public int delete(Map<String, Object> parameterMap) {
-		return dao.delete(parameterMap);
+	public int delete(T dto) {
+		return dao.delete(dto);
 	}	
 }

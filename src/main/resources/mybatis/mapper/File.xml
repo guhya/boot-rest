@@ -4,7 +4,10 @@
 
 <mapper namespace="net.guhya.boot.module.file.dao.Mapper">
 
-	 <insert id="insert" parameterType="hashmap" useGeneratedKeys="true" keyProperty="seq">
+	 <insert id="insert" 
+	 	parameterType="net.guhya.boot.module.file.data.FileData" 
+	 	useGeneratedKeys="true" keyProperty="seq">
+	 	
 		INSERT INTO FILE(
 			CHANNEL
 			, CATEGORY
@@ -33,7 +36,10 @@
 		)
 	</insert>
 	
-	<select id="select" parameterType="hashmap" resultType="hashmap">
+	<select id="select" 
+		parameterType="net.guhya.boot.module.file.data.FileData" 
+		resultType="net.guhya.boot.module.file.data.FileData">
+		
 		SELECT
 			SEQ AS "seq"
 			, CATEGORY AS "category"
@@ -54,7 +60,10 @@
 		WHERE SEQ = #{seq}   		
 	</select>
 	
-	<select id="selectByOwner" parameterType="hashmap" resultType="hashmap">
+	<select id="selectByChannelCategoryOwner" 
+		parameterType="net.guhya.boot.module.file.data.FileData" 
+		resultType="net.guhya.boot.module.file.data.FileData">
+		
 		SELECT
 			SEQ AS "seq"
 			, CATEGORY AS "category"
@@ -72,10 +81,12 @@
 			, MOD_ID AS "modId"
 			, MOD_DATE AS "modDate"
 		FROM FILE
-		WHERE CHANNEL = #{channel} AND OWNER_SEQ = #{ownerSeq} 
+		WHERE CHANNEL = #{channel} AND CATEGORY = #{category} AND OWNER_SEQ = #{ownerSeq} 
 	</select>
 	
-	<select id="list" parameterType="hashmap" resultType="hashmap">
+	<select id="list" parameterType="hashmap" 
+		resultType="net.guhya.boot.module.file.data.FileData">
+		
 		SELECT
 			SEQ AS "seq"
 			, CATEGORY AS "category"
@@ -100,10 +111,6 @@
        	<if test="category != '' and category != null">
       		AND CATEGORY = #{category}
        	</if>	
-   		<if test="attachment != '' and attachment != null">
-   			AND CATEGORY LIKE CONCAT(CONCAT('%',#{attachment}),'%') 
-   		</if>
-       	
        	<if test="ownerSeq != '' and ownerSeq != null">
       		AND OWNER_SEQ = #{ownerSeq}
        	</if>
@@ -118,7 +125,9 @@
        	</if>
 	</select>
 	
-	<delete id="delete" parameterType="hashmap">
+	<delete id="delete" 
+		parameterType="net.guhya.boot.module.file.data.FileData">
+		
 		DELETE FROM FILE WHERE SEQ = #{seq} AND OWNER_SEQ = #{ownerSeq}
 	</delete>
 	

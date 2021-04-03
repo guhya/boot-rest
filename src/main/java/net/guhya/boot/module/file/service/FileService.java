@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.guhya.boot.common.service;
+package net.guhya.boot.module.file.service;
 
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import net.guhya.boot.common.dao.FileDao;
-import net.guhya.boot.common.data.FileBox;
+import net.guhya.boot.common.service.GenericService;
+import net.guhya.boot.module.file.dao.FileDao;
+import net.guhya.boot.module.file.data.FileData;
 
 @Service(value = "fileService")
-public class FileService extends GenericService<FileBox> {
+public class FileService extends GenericService<FileData> {
 
 	private FileDao fileDao;
 	
@@ -34,14 +35,8 @@ public class FileService extends GenericService<FileBox> {
 		setEntityName("file");
 	}
 
-	/**
-	 * Get an item based on user parameter
-	 * @param parameterMap HTTP Request parameters wrapped in HashMap
-	 * @return HashMap item
-	 * @exception Exception
-	 */
-	public Map<String, Object> selectByOwner(Map<String, Object> parameterMap) throws Exception {
-		return fileDao.selectByOwner(parameterMap);
+	public List<FileData> selectByChannelCategoryOwner(FileData dto) throws Exception {
+		return fileDao.selectByChannelCategoryOwner(dto);
 	}
 
 }

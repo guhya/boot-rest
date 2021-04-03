@@ -16,7 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
-import net.guhya.boot.common.data.JsonResult;
+import net.guhya.boot.common.web.response.JsonResult;
 
 @Controller
 public class MainController {

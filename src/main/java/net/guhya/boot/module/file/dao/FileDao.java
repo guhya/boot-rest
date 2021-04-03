@@ -13,30 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.guhya.boot.common.dao;
+package net.guhya.boot.module.file.dao;
 
-import java.util.Map;
+import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
-import net.guhya.boot.common.data.FileBox;
+import net.guhya.boot.common.dao.GenericDao;
+import net.guhya.boot.module.file.data.FileData;
 
 @Repository(value = "fileDao")
-public class FileDao extends GenericDao<FileBox> {
+public class FileDao extends GenericDao<FileData> {
 
 	public FileDao(SqlSession sqlSession) {
 		super(sqlSession);
 	}
 
-	/**
-	 * Get an item based on user parameter
-	 * @param paramBox HTTP Request parameters wrapped in HashMap
-	 * @return HashMap item
-	 * @exception Exception
-	 */
-	public Map<String, Object> selectByOwner(Map<String, Object> parameterMap) throws Exception {
-		return sqlSession.selectOne(namespace + "selectByOwner", parameterMap);
+	public List<FileData> selectByChannelCategoryOwner(FileData dto) throws Exception {
+		return sqlSession.selectList(namespace + "selectByChannelCategoryOwner", dto);
 	}
 
 }

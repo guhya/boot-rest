@@ -12,21 +12,21 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import net.guhya.boot.security.data.UserInfo;
+import net.guhya.boot.module.user.data.UserData;
 
 public class JwtParser {
 
 	private static Logger log = LoggerFactory.getLogger(JwtParser.class);
 
-	public static String generateToken(UserInfo userInfo)
+	public static String generateToken(UserData userData)
 			throws IOException, ServletException {
 		
-        Claims claims = Jwts.claims().setSubject(userInfo.getUserId());
-        claims.put("userId", userInfo.getUserId() + "");
-        claims.put("role", userInfo.getRoleString());
+        Claims claims = Jwts.claims().setSubject(userData.getUserId());
+        claims.put("userId", userData.getUserId() + "");
+        claims.put("role", userData.getRoleString());
 
 		String token = Jwts.builder()
-				.setSubject(userInfo.getUserId())
+				.setSubject(userData.getUserId())
 				.setClaims(claims)
 				.setExpiration(new Date(System.currentTimeMillis() + 864_000_000))
 				.signWith(SignatureAlgorithm.HS512, "SECRETKEY".getBytes())
@@ -37,7 +37,7 @@ public class JwtParser {
 		return token;
 	}
 	
-	public static UserInfo parseToken(String token) {
+	public static UserData parseToken(String token) {
 		
 		Jws<Claims> jwt = Jwts.parser()
 					.setSigningKey("SECRETKEY".getBytes())
@@ -47,11 +47,11 @@ public class JwtParser {
 		
     	Claims body = jwt.getBody();
     	
-    	UserInfo userInfo = new UserInfo();
-    	userInfo.setUserId((String) body.get("userId"));
-    	userInfo.setRoleString((String) body.get("role"));
+    	UserData userData = new UserData();
+    	userData.setUserId((String) body.get("userId"));
+    	userData.setRoleString((String) body.get("role"));
 		
-    	return userInfo;
+    	return userData;
 	}
 	
 }

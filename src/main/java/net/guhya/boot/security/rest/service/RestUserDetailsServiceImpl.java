@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import net.guhya.boot.security.data.UserInfo;
-import net.guhya.boot.security.data.UserInfoWrapper;
+import net.guhya.boot.module.user.data.UserData;
+import net.guhya.boot.security.data.UserDataWrapper;
 
 @Service
 public class RestUserDetailsServiceImpl implements UserDetailsService {
@@ -20,15 +20,15 @@ public class RestUserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 		
-		UserInfo userInfo = new UserInfo();
-		userInfo = loginService.buildPrincipal(userId);
-		boolean enabled = userInfo.getEnabled().equals("Y");
+		UserData userData = new UserData();
+		userData = loginService.buildPrincipal(userId);
+		boolean enabled = userData.getEnabled().equals("Y");
 		
-		return new UserInfoWrapper(
-				userInfo.getUserId()
-				, userInfo.getPassword()
+		return new UserDataWrapper(
+				userData.getUserId()
+				, userData.getPassword()
 				, enabled
-				, AuthorityUtils.commaSeparatedStringToAuthorityList(userInfo.getRoleString())
-				, userInfo);
+				, AuthorityUtils.commaSeparatedStringToAuthorityList(userData.getRoleString())
+				, userData);
 	}
 }

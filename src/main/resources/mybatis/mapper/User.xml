@@ -8,7 +8,9 @@
 		<result property="content" column="CONTENT" jdbcType="CLOB" javaType="string"/>
 	</resultMap>
 	
-	<select id="select"	parameterType="hashmap" resultMap="customMap">
+	<select id="select"	
+		parameterType="net.guhya.boot.module.user.data.UserData" 
+		resultType="net.guhya.boot.module.user.data.UserData">
 		SELECT
 			'username' AS "userId"
 			,'$2a$10$ajj6VSg4rCyJyR4zofsNuu5.WsK5gnLRU/X2WXF.QuQDbAnyaFNxy' AS "password"

@@ -17,29 +17,22 @@
 package net.guhya.boot.module.user.dao;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import net.guhya.boot.common.dao.GenericDao;
-import net.guhya.boot.common.data.Box;
+import net.guhya.boot.module.user.data.UserData;
 
 @Repository(value = "userDao")
-public class UserDao extends GenericDao<Box>{
+public class UserDao extends GenericDao<UserData>{
 	
 	public UserDao(SqlSession sqlSession) {
 		super(sqlSession);
 	}
 
-	/**
-	 * Return roles of a particular user
-	 * @param paramBox HTTP request parameters wrapped in HashMap
-	 * @return List of user roles
-	 * @throws Exception
-	 */
-	public List<String> listUserRoles(Map<String, Object> map) throws Exception {
-		return sqlSession.selectList(namespace + "listUserRoles", map);
+	public List<String> listUserRoles(UserData dto) throws Exception {
+		return sqlSession.selectList(namespace + "listUserRoles", dto);
 	}
 	
 }

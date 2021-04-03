@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import net.guhya.boot.common.data.Box;
-import net.guhya.boot.common.data.FileBox;
-import net.guhya.boot.common.data.JsonResult;
 import net.guhya.boot.common.exception.GeneralRestException;
-import net.guhya.boot.common.service.FileService;
 import net.guhya.boot.common.web.AbstractRestController;
+import net.guhya.boot.common.web.request.Box;
+import net.guhya.boot.common.web.response.JsonResult;
+import net.guhya.boot.module.file.data.FileData;
+import net.guhya.boot.module.file.service.FileService;
 
 @RestController
 @RequestMapping(value = "/v1/files", 
@@ -42,50 +42,51 @@ public class FileRestController extends AbstractRestController {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public JsonResult upload(Box paramBox) throws Exception {
+	public JsonResult<FileData> upload(Box paramBox) throws Exception {
 		
 		log.info("Upload file");
-
-		Map<String, Object> item;
-
-		/* Operation based on category */
-		String category = paramBox.getString("category");
-		switch(category) {
-			case "mainImage" :
-				item = fileService.selectByOwner(paramBox.getMap());
-				if(item != null)
-					fileService.delete(item);
-				break;
-		}
 		
+		FileData item;
 		try {
 			@SuppressWarnings("unchecked")
 			List<Map<String, MultipartFile>> fileList = (List<Map<String, MultipartFile>>) paramBox.get(FILE_LIST);
 			
-			int lastId = 0;
+			long lastId = 0;
 			for(Map<String, MultipartFile> fileMap : fileList){
 				for(Entry<String, MultipartFile> file : fileMap.entrySet()){
 					final MultipartFile theFile	= file.getValue();
 					
-					//Owner of the file is newly inserted seq
+					FileData fileDto = new FileData();
+					fileDto.setOwnerSeq(paramBox.getLong("ownerSeq"));
 					String channel = paramBox.getString("channel");
-					Box fileBox = new FileBox(paramBox, theFile, file.getKey(), channel, channel);
-					
-					if(!"".equals(file.getValue().getOriginalFilename())){
-						writeFile(file.getValue(), fileBox.getString("name"), PATH_UPLOAD+channel);
-						lastId = fileService.insert(fileBox.getMap());
+					fileDto.setChannel(channel);
+					fileDto.setPath(channel);
+					String category = file.getKey();
+					fileDto.setCategory(category);
+					fileDto.setOriginalName(theFile.getOriginalFilename());
+					String name = generateFileName(fileDto);
+					fileDto.setName(name);
+					fileDto.setFileSize(theFile.getSize());
+
+					if(!"".equals(theFile.getOriginalFilename())){
+						List<FileData> oldFiles = fileService.selectByChannelCategoryOwner(fileDto);
+						for(FileData of : oldFiles) {
+							fileService.delete(of);
+						}
+						
+						writeFile(theFile, name, PATH_UPLOAD+fileDto.getChannel());
+						lastId = fileService.insert(fileDto);
 					}
 				}
 			}
 			
-			paramBox.put("seq", lastId);
-			item = fileService.select(paramBox.getMap());
+			item = fileService.select(new FileData(lastId));
 			
 		} catch (Exception ex) {
 			throw new GeneralRestException("Operation failed");
 		}
 		
-		return new JsonResult(item);
+		return new JsonResult<FileData>(item);
 	}
 
 	private void writeFile(MultipartFile file, String fileName, String filePath) throws IOException {
@@ -111,4 +112,28 @@ public class FileRestController extends AbstractRestController {
 		if (stream != null) stream.close();
 	}
 	
+	private String generateFileName(FileData fileData){
+		final StringBuilder sb		= new StringBuilder();
+		sb.append(fileData.getChannel());
+		sb.append("_");
+		sb.append(fileData.getCategory());
+		sb.append("_");
+		sb.append(System.currentTimeMillis());
+		sb.append(".");
+		sb.append(getFileExtension(fileData.getOriginalName()));
+		
+		return sb.toString();
+	}
+	
+	private String getFileExtension(String fileName){
+		String ext = "";
+		if(fileName.indexOf(".") == -1){
+			ext = "";
+		}else{
+			String[] arrFile = fileName.split("\\.");
+			ext = arrFile[arrFile.length-1];
+		}
+
+		return ext;
+	}	
 }

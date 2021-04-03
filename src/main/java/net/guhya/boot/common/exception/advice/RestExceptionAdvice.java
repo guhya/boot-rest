@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import net.guhya.boot.common.data.JsonResult;
 import net.guhya.boot.common.exception.GeneralRestException;
 import net.guhya.boot.common.exception.ItemNotFoundException;
+import net.guhya.boot.common.web.response.JsonResult;
 
 @RestControllerAdvice
 public class RestExceptionAdvice extends ResponseEntityExceptionHandler {

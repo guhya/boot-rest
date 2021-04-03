@@ -1,7 +1,6 @@
 package net.guhya.boot.security.rest.service;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,9 +16,8 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Service;
 
-import net.guhya.boot.common.data.Box;
+import net.guhya.boot.module.user.data.UserData;
 import net.guhya.boot.module.user.service.UserService;
-import net.guhya.boot.security.data.UserInfo;
 
 @Service("loginService")
 public class RestLoginService {
@@ -29,49 +27,35 @@ public class RestLoginService {
 	@Autowired
 	private UserService userService;
 
-	public UserInfo getLoggedInUser() {
+	public UserData getLoggedInUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if(auth == null) return new UserInfo();
+		if(auth == null) return new UserData();
 		
 		Object principal = auth.getPrincipal();
-		if(principal.equals("anonymousUser")) return new UserInfo();
+		if(principal.equals("anonymousUser")) return new UserData();
 		
-		UserInfo loggedInUser = (UserInfo) principal;		
+		UserData loggedInUser = (UserData) principal;		
 		return loggedInUser;
 	}
 	
-	public UserInfo buildPrincipal(String userId) {
+	public UserData buildPrincipal(String userId) {
 		
 		log.info("##### [Login Service] Build principal");		
-		Box userBox = new Box();
-		userBox.put("userId", userId);
-		
-		UserInfo userInfo = new UserInfo();
+		UserData userData = new UserData();
 		
 		try {
-			Map<String, Object> result = userService.select(userBox.getMap());
-			List<String> userRoles = userService.listUserRoles(userBox.getMap());
+			userData.setUserId(userId);
+			userData = userService.select(userData);
+			List<String> userRoles = userService.listUserRoles(userData);
 			
 			String sRoles 			= StringUtils.join(userRoles, ",");
-			String password			= (String) result.get("password");
-			String firstName		= (String) result.get("firstName");
-			String lastName			= (String) result.get("lastName");
-			String email			= (String) result.get("email");
-			String enabled			= (String) result.get("enabled");
-					
-			userInfo.setUserId(userId);
-			userInfo.setPassword(password);
-			userInfo.setFirstName(firstName);
-			userInfo.setLastName(lastName);
-			userInfo.setRoleString(sRoles);
-			userInfo.setEmail(email);
-			userInfo.setEnabled(enabled);
+			userData.setRoleString(sRoles);		
 			
 		} catch (Exception ex) {
-			return new UserInfo();
+			return new UserData();
 		}
 		
-		return userInfo;		
+		return userData;		
 	}
 
 	public void doLogout(HttpServletRequest request, HttpServletResponse response) {

@@ -1,4 +1,4 @@
-package net.guhya.boot.common.data;
+package net.guhya.boot.common.web.request;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -87,6 +87,10 @@ public class Box {
 		return MapUtil.getInt(map, key);
 	}
 	
+	public long getLong(String key) {
+		return MapUtil.getLong(map, key);
+	}
+
 	public double getDouble(String key) {
 		return MapUtil.getDouble(map, key);
 	}

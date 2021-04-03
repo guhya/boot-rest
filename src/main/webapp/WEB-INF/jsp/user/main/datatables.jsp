@@ -144,8 +144,9 @@
 	        			$("#"+key).val(val);
 	        		}
         	    });
-	        	if(res.data.attributes.mainImage != undefined){
-		        	$("#mainImageCon").attr("src", "/public/" + res.data.attributes.mainImage);
+        	    var files = res.data.attributes.files;
+	        	if(files[0] != undefined){
+		        	$("#mainImageCon").attr("src", "/public/board/" + files[0].name);
 	        		$("#mainImageConGroup").show();
 	        	}else{
 	        		$("#mainImageConGroup").hide();
@@ -193,8 +194,7 @@
 		doSave().then(function(res){
 			var data = {
 					"ownerSeq" : res.data.attributes.seq,
-					"channel" : "board",
-					"category" : "mainImage"
+					"channel" : "board"
 			};
 			doUpload(data).always(function(res){
 				console.log("Cleaning up, doesn't matter if error");

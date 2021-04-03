@@ -4,7 +4,8 @@ package net.guhya.boot.common.web;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 
-import net.guhya.boot.common.data.Box;
+import net.guhya.boot.common.data.PagingData;
+import net.guhya.boot.common.web.request.Box;
 
 @PropertySource({ 
   "classpath:/application${env:}.properties"
@@ -24,7 +25,7 @@ public abstract class AbstractRestController {
 	
 	public static final String CURRENT				= "current";
 	public static final String PAGE_SIZE			= "pageSize";
-	public static final String TOTAL_ROWS			= "totalRows";
+	public static final String TOTAL_RECORDS		= "totalRecords";
 	
 	public static final String FILE_LIST			= "fileList";
 	public static final String REQ_DELETED_FILES	= "deletedFiles";
@@ -40,8 +41,9 @@ public abstract class AbstractRestController {
 	 * @param paramBox
 	 * @param totalRecords
 	 */
-	public void listPaging(Box paramBox, int totalRecords) {
+	protected void listPaging(Box paramBox, int totalRecords) {
 		
+		paramBox.put(TOTAL_RECORDS, totalRecords);
 		int pageSize = paramBox.getInt(PARAM_PAGE_SIZE);
 		int currentPage = paramBox.getInt(PARAM_PAGE);
 		
@@ -54,9 +56,24 @@ public abstract class AbstractRestController {
 		currentPage = currentPage < 1 ? 1 : currentPage;
 		if(currentPage > 0){
 			int newCurrent = getCurrentPage(totalRecords, pageSize, currentPage); 
-			paramBox.put(PARAM_PAGE, newCurrent);
-			paramBox.put(PARAM_START_ROW, (newCurrent-1) * pageSize);
+			int startRow = (newCurrent-1) * pageSize;
+			paramBox.put(PARAM_START_ROW, startRow);
 		}
+		
+	}
+	
+	protected PagingData getPagingData(Box paramBox) {
+		PagingData meta = new PagingData();
+		meta.setTotalRecords(paramBox.getInt(TOTAL_RECORDS));
+		meta.setPageSize(paramBox.getInt(PARAM_PAGE_SIZE));
+		meta.setPage(paramBox.getInt(PARAM_PAGE));
+		meta.setStartRow(paramBox.getInt(PARAM_START_ROW));
+		meta.setCondition(paramBox.getString(PARAM_CONDITION));
+		meta.setKeyword(paramBox.getString(PARAM_KEYWORD));
+		meta.setSortColumn(paramBox.getString(PARAM_SORT_COLUMN));
+		meta.setSortOrder(paramBox.getString(PARAM_SORT_ORDER));
+		
+		return meta;
 	}
 	
 	/**
@@ -66,10 +83,11 @@ public abstract class AbstractRestController {
 	 * @param currentPage
 	 * @return
 	 */
-	public int getCurrentPage(int totalRecords, int pageSize, int currentPage) {
+	protected int getCurrentPage(int totalRecords, int pageSize, int currentPage) {
 		double p = Math.ceil(totalRecords / (double) pageSize);
 		int newCurrent = p < currentPage ? 1 : currentPage; 
 		
 		return newCurrent;
 	}
+	
 }

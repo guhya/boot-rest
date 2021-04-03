@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.guhya.boot.common.data.JsonResult;
-import net.guhya.boot.security.data.UserInfo;
-import net.guhya.boot.security.data.UserInfoWrapper;
+import net.guhya.boot.common.web.response.JsonResult;
+import net.guhya.boot.module.user.data.UserData;
+import net.guhya.boot.security.data.UserDataWrapper;
 import net.guhya.boot.security.rest.JwtParser;
 
 @Component
@@ -36,11 +36,11 @@ public class RestLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
 		Object principal = authentication.getPrincipal();
 		log.info("### Principal " + principal.toString());
 		
-		UserInfo userInfo = ((UserInfoWrapper) principal).getUserInfo();
-		String token = JwtParser.generateToken(userInfo);
+		UserData userData = ((UserDataWrapper) principal).getUserInfo();
+		String token = JwtParser.generateToken(userData);
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("token", token);
-		resMap.put("user", userInfo);
+		resMap.put("user", userData);
 		
 		log.info("### Token " + token);
 		
