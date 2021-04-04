@@ -2,6 +2,8 @@ package net.guhya.boot.module.board.data;
 
 import java.util.List;
 
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -11,20 +13,31 @@ import net.guhya.boot.module.file.data.FileData;
 
 @JsonInclude(Include.NON_NULL)
 @JsonPropertyOrder({"seq","title","subtitle","summary","content","author"})
-public class Board extends AbstractData {
+public class BoardData extends AbstractData {
 	
 	private Long seq;
+	
+	@Size(min = 5, max = 100, message = "Length between 5 - 100 characters.")
 	private String title;
+	
+	@Size(min = 5, max = 100, message = "Length between 5 - 100 characters.")
 	private String subtitle;
+	
+	@Size(min = 5, max = 200, message = "Length between 5 - 200 characters.")
 	private String summary;
+	
+	@Size(min = 5, max = 400, message = "Length between 5 - 400 characters.")
 	private String content;
+	
+	@Size(min = 5, max = 50, message = "Length between 5 - 50 characters.")
 	private String author;
+	
 	private List<FileData> files;
 	
-	public Board() {
+	public BoardData() {
 	}
 
-	public Board(Long seq) {
+	public BoardData(Long seq) {
 		this.seq = seq;
 	}
 	
@@ -75,7 +88,7 @@ public class Board extends AbstractData {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Board [seq=");
+		builder.append("BoardData [seq=");
 		builder.append(seq);
 		builder.append(", title=");
 		builder.append(title);

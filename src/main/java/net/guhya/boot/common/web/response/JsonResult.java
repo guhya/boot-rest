@@ -37,13 +37,26 @@ public class JsonResult<T> {
 	 * @param errorCode
 	 * @param ex
 	 */
-	public JsonResult(String errorCode, Exception ex) {
+	public JsonResult(String errorCode, String message) {
 		this.status = "error";
 		this.error = errorCode;
-		this.message = ex.getMessage();
+		this.message = message;
 		this.timestamp = LocalDateTime.now().toString();
 	}
 
+	/**
+	 * Response for error
+	 * @param errorCode
+	 * @param ex
+	 */
+	public JsonResult(String errorCode, T errors) {
+		this.status = "error";
+		this.error = errorCode;
+		this.data = new HashMap<>();
+		this.data.put("attributes", errors);
+		this.timestamp = LocalDateTime.now().toString();
+	}
+	
 
 	public Map<String, T> getData() {
 		return data;
