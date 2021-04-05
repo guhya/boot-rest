@@ -114,7 +114,7 @@
 		        	"password" : "admin"
 		        }),
 		        success : function(res){
-		        	authHeader = res.data.attributes.token;
+		        	authHeader = res.data.token;
 		        	setCookie("token", authHeader, 1);
 		        }
 			});
@@ -139,12 +139,13 @@
 	        contentType : "application/json",
 	        url : "/v1/boards/get/"+id,
 	        success : function(res){
-	        	$.each(res.data.attributes, function(key, val) {
+	        	$.each(res.data, function(key, val) {
 	        		if($("#"+key).prop("type") != "file"){
 	        			$("#"+key).val(val);
 	        		}
         	    });
-        	    var files = res.data.attributes.files;
+	        	CKEDITOR.instances["content"].setData(res.data.content);
+	        	var files = res.data.files;
 	        	if(files[0] != undefined){
 		        	$("#mainImageCon").attr("src", "/public/board/" + files[0].name);
 	        		$("#mainImageConGroup").show();
@@ -193,7 +194,7 @@
 
 		doSave().then(function(res){
 			var data = {
-					"ownerSeq" : res.data.attributes.seq,
+					"ownerSeq" : res.data.seq,
 					"channel" : "board"
 			};
 			doUpload(data).always(function(res){
@@ -203,14 +204,19 @@
 			});
 		});
 	};
-	
+
+	var ewdebug = {};
 	var doSave = function(){
+		$("#inputForm .invalid-feedback").remove();
+		$("#inputForm .is-invalid").removeClass("is-invalid");
+		
 		var data = {};
 		var arr = $("#inputForm").serializeArray();
 		for(el in arr){
 			if(arr[el].name == "seq" && arr[el].value == "") continue;
 			data[arr[el].name] = arr[el].value;
 		}
+		data.content = CKEDITOR.instances["content"].getData();
 		
 		var url = "";
 		if(data.seq != undefined)
@@ -226,7 +232,20 @@
 	        data : JSON.stringify(data),
 	        success : function(res){
 	        	console.log("Saving data success");
-	        }
+	        },
+	        error : function(res){
+		        ewdebug = res;
+		        if(res.status == 400){
+			        var data = ewdebug.responseJSON.data;
+					for(key in data){
+						if (data.hasOwnProperty(key)){
+							var $el = $("#inputForm").find("#"+key);
+							$el.addClass("is-invalid");
+							$el.after("<div class='invalid-feedback'>"+data[key]+"</div>");
+						}
+					}
+			    }
+		    }
 		});
 	};
 	
@@ -265,8 +284,8 @@
 	});
 	
 	var ewdebug = {};
-
 	var dt;
+	var dp = new DOMParser();
 	var cols = [
 		{"data" : "seq", "className" : "d-none d-xl-table-cell", "width": "5%"},
 		{"data" : "title", "width": "15%"},
@@ -276,7 +295,9 @@
 			"className" : "d-none d-md-table-cell", 
 			"width": "30%",
 			"render" : function (data, type, row, meta) {
-				var val = row.content.length > 35 ? row.content.substring(0, 35) + "..." : row.content;
+				var val = dp.parseFromString(row.content, "text/html");
+				val = val.body.textContent || "";
+				val = val.length > 35 ? val.substring(0, 35) + "..." : row.content;
 				return val;
 			}
 		},
@@ -343,7 +364,7 @@
 							var json = JSON.parse(data);
 							json.recordsTotal = json.meta.totalRecords;
 							json.recordsFiltered = json.meta.totalRecords;
-							json.data = json.data.attributes;
+							json.data = json.data;
 							return JSON.stringify(json);
 						}
 					})
@@ -361,6 +382,9 @@
 					});
 			    },
 			});
+		});
+		CKEDITOR.replace("content", {
+		      height: 150
 		});
 
 	});

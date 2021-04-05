@@ -60,7 +60,7 @@ public class MainController {
 		return response.getBody();
 	}
 	
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private String getToken() {
 		Map<String, String> body = new LinkedHashMap<String, String>();
 		body.put("username", "username");
@@ -70,7 +70,7 @@ public class MainController {
 		HttpEntity<Map<String, String>> request = new HttpEntity<>(body, getHeader());
 		ResponseEntity<JsonResult> response = rest.exchange(url, HttpMethod.POST, request, JsonResult.class);
 		
-		Map<String, Object> data = (Map<String, Object>) response.getBody().getData().get("attributes");
+		Map<String, Object> data = (Map<String, Object>) response.getBody().getData();
 		String token = (String) data.get("token");
 		log.info("Returning user data : " + token);
 		
