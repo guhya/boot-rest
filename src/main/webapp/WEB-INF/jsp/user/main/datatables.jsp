@@ -58,7 +58,7 @@
 					</div>
 					<div class="form-row">
 						<div class="col-md-12 mb-3">
-							<label>Sub Title</label> 
+							<label>Subtitle</label> 
 							<input type="text" class="form-control" name="subtitle" id="subtitle" value="" required>
 						</div>
 					</div>
@@ -97,38 +97,13 @@
 </div>
 
 <script>
-	var authHeader = getCookie("token");
-	var checkHeader = function(req){
-		if(authHeader == undefined || authHeader == ""){
-			return $.ajax({
-		        dataType : "JSON",
-		        method : "POST",
-		        global : false,
-		        contentType : "application/json",
-		        url : "/v1/users/login",
-		        beforeSend : function (xhr) {
-					console.log("Logging in");
-				},		        
-		        data : JSON.stringify({
-		        	"username" : "username",
-		        	"password" : "admin"
-		        }),
-		        success : function(res){
-		        	authHeader = res.data.token;
-		        	setCookie("token", authHeader, 1);
-		        }
-			});
-		}else{
-			if (req != undefined) req.setRequestHeader("Authorization", "Bearer " + authHeader.trim());
-			return $.Deferred().resolve().promise();
-		}
-	};
-	
 	var resetForm = function(){
 		document.inputForm.reset();
 		document.fileForm.reset();
     	$("#mainImageCon").attr("src", "");
 		$("#mainImageConGroup").show();
+		$("#inputForm .invalid-feedback").remove();
+		$("#inputForm .is-invalid").removeClass("is-invalid");
 	};
 
 	var doEdit = function(id){
@@ -277,12 +252,6 @@
 		});
 	};
 	
-	$.ajaxSetup({
-		beforeSend : function (req) {
-			checkHeader(req);
-		}
-	});
-	
 	var ewdebug = {};
 	var dt;
 	var dp = new DOMParser();
@@ -291,16 +260,7 @@
 		{"data" : "title", "width": "15%"},
 		{"data" : "subtitle", "className" : "d-none d-xl-table-cell", "width": "10%"},
 		{"data" : "summary", "className" : "d-none d-xl-table-cell", "width": "15%"},
-		{
-			"className" : "d-none d-md-table-cell", 
-			"width": "30%",
-			"render" : function (data, type, row, meta) {
-				var val = dp.parseFromString(row.content, "text/html");
-				val = val.body.textContent || "";
-				val = val.length > 35 ? val.substring(0, 35) + "..." : row.content;
-				return val;
-			}
-		},
+		{"data" : "content", "className" : "d-none d-md-table-cell", "width": "30%"},
 		{"data" : "author", "className" : "text-center d-none d-xl-table-cell", "width": "5%"},
 		{"data" : "regDate", "className" : "text-center d-none d-xl-table-cell", "width": "10%"},
 		{
@@ -321,7 +281,8 @@
 				    el += "<a tabindex='0' title='Delete' data-toggle='popover' data-placement='left' data-content='"+pd+"' class='btn btn-danger'>Delete</a>";
 				
 				return el;
-			}
+			},
+			"orderable" : false
 		},
 	];
 	
@@ -330,7 +291,7 @@
 			dt = $("#myTable").DataTable({
 				dom : 	"<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
 						"<'row'<'col-sm-12'tr>>" +
-						"<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+						"<'row'<'col-sm-12 col-md-6'i><'mt-2 col-sm-12 col-md-6'p>>",
 				pageLength 	: 10,
 				lengthMenu 	: [5, 10, 20, 50, 100],
 				bProcessing : true,
@@ -364,7 +325,18 @@
 							var json = JSON.parse(data);
 							json.recordsTotal = json.meta.totalRecords;
 							json.recordsFiltered = json.meta.totalRecords;
-							json.data = json.data;
+							for(key in json.data){
+								var d = new Date(json.data[key].regDate);
+								let [month, date, year] = d.toLocaleDateString("en-US").split("/");
+								month = ("0" + month).substring(("0" + month).length -2);
+								date = ("0" + date).substring(("0" + date).length -2);
+								let [hour, minute, second] = new Date().toLocaleTimeString("en-US").split(/:| /);
+								json.data[key].regDate = year + "." + month + "." + date + " " + hour + ":" + minute + ":" + second;
+
+								var content = dp.parseFromString(json.data[key].content, "text/html");
+								content = content.body.textContent || "";
+								json.data[key].content = content.length > 35 ? content.substring(0, 35) + "..." : content;
+							}
 							return JSON.stringify(json);
 						}
 					})

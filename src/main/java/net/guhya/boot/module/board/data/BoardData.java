@@ -20,13 +20,13 @@ public class BoardData extends AbstractData {
 	@Size(min = 2, max = 100, message = "Length between 2 - 100 characters.")
 	private String title;
 	
-	@Size(min = 2, max = 100, message = "Length between 2 - 100 characters.")
+	@Size(min = 2, max = 200, message = "Length between 2 - 200 characters.")
 	private String subtitle;
 	
-	@Size(min = 2, max = 200, message = "Length between 2 - 200 characters.")
+	@Size(min = 2, max = 400, message = "Length between 2 - 400 characters.")
 	private String summary;
 	
-	@Size(min = 5, max = 400, message = "Length between 5 - 400 characters.")
+	@Size(min = 5, max = 4000, message = "Length between 5 - 4000 characters.")
 	private String content;
 	
 	@Size(min = 2, max = 50, message = "Length between 2 - 50 characters.")
