@@ -91,7 +91,7 @@
 		) x
 		LEFT JOIN FILE b
 			ON x.SEQ = b.OWNER_SEQ
-			AND b.SEQ = (SELECT MAX(SEQ) FROM FILE WHERE OWNER_SEQ = x.SEQ) 
+			AND b.SEQ = (SELECT MAX(SEQ) FROM FILE WHERE CHANNEL = 'board' AND CATEGORY = 'mainImage' AND OWNER_SEQ = x.SEQ) 
 	</select>
 	
 	<select id="countList" 	parameterType="hashmap" resultType="int">
@@ -119,7 +119,7 @@
 		FROM BOARD a
 			LEFT JOIN FILE b
 				ON a.SEQ = b.OWNER_SEQ
-				AND b.SEQ = (SELECT MAX(SEQ) FROM FILE WHERE OWNER_SEQ = a.SEQ) 
+				AND b.SEQ = (SELECT MAX(SEQ) FROM FILE WHERE CHANNEL = 'board' AND CATEGORY = 'mainImage' AND OWNER_SEQ = a.SEQ) 
 		WHERE a.SEQ = #{seq}
     </select>
     
