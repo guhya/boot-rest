@@ -77,13 +77,13 @@
 					<input type="submit" name="submitHandler" style="display:none"/>
 				</form>
 				<form id="fileForm" name="fileForm" enctype="multipart/form-data">
-					<div class="form-row" id="mainImageConGroup">
-						<div class="col-md-3 mb-3">
-							<img id="mainImageCon" src="" class="img-thumbnail">						
-              			</div>
-					</div>
-					<div class="form-row" id="mainImageGroup">
-						<div class="col-md-12 mb-3">
+					<div class="form-row">
+						<div class="col-md-12">
+							<div class="row">
+								<div class="col-md-3 mb-3" id="mainImageConGroup">
+									<img id="mainImageCon" src="" class="img-thumbnail">						
+		              			</div>
+	              			</div>
                 			<input type="file" id="mainImage" class="form-control-file" name="mainImage">
               			</div>
 					</div>
