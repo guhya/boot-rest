@@ -34,6 +34,22 @@ public class NumberUtil {
 		}
 	}
 	
+	public static long toLong(Object value) {
+		if (value == null) {
+			return 0;
+		}
+		if (value instanceof Number) {
+			return ((Number) value).longValue();
+		} else {
+			String s = value.toString();
+			s = s.replaceAll("\\D+","");
+			if (s.length() == 0) {
+				return 0;
+			}
+			return Long.parseLong(s);
+		}
+	}
+
 	public static Number nvl(Number value) {
 		return nvl(value, BigDecimal.ZERO);
 	}

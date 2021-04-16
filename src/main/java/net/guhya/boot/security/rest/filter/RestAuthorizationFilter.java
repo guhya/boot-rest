@@ -13,7 +13,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import net.guhya.boot.security.data.UserInfo;
+import net.guhya.boot.module.user.data.UserData;
 import net.guhya.boot.security.rest.JwtParser;
 
 public class RestAuthorizationFilter extends BasicAuthenticationFilter {
@@ -40,12 +40,12 @@ public class RestAuthorizationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request){
         String token = request.getHeader("Authorization");
         if(token != null){
-        	UserInfo userInfo = JwtParser.parseToken(token);
-            if(userInfo != null){
+        	UserData userData = JwtParser.parseToken(token);
+            if(userData != null){
                 return new UsernamePasswordAuthenticationToken(
-                		userInfo
-                		, userInfo.getPassword()
-                		, AuthorityUtils.commaSeparatedStringToAuthorityList(userInfo.getRoleString()));
+                		userData
+                		, userData.getPassword()
+                		, AuthorityUtils.commaSeparatedStringToAuthorityList(userData.getRoleString()));
             }
         }
         

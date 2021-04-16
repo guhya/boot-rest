@@ -1,11 +1,10 @@
 package net.guhya.boot.config.swagger;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-import net.guhya.boot.common.data.Box;
+import net.guhya.boot.common.web.request.Box;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -21,8 +20,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 })
 public class SwaggerConfig {
 	
-    @Value("${app.package}")
-	private String basePackage;
+	private final static String BASE_PACKAGE = "net.guhya.boot";
 	
 	@Bean
     public Docket api() {
@@ -30,7 +28,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
         	.ignoredParameterTypes(Box.class)
         	.select()
-            .apis(RequestHandlerSelectors.basePackage(basePackage))
+            .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
             .paths(PathSelectors.ant("/v1/**"))
             .build()
             .apiInfo(apiEndPointsInfo());

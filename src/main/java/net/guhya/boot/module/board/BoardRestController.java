@@ -1,7 +1,8 @@
 package net.guhya.boot.module.board;
 
 import java.util.List;
-import java.util.Map;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.guhya.boot.common.data.Box;
-import net.guhya.boot.common.data.JsonResult;
-import net.guhya.boot.common.exception.GeneralRestException;
-import net.guhya.boot.common.exception.ItemNotFoundException;
 import net.guhya.boot.common.service.GenericService;
 import net.guhya.boot.common.web.AbstractRestController;
+import net.guhya.boot.common.web.request.Box;
+import net.guhya.boot.common.web.response.JsonListResult;
+import net.guhya.boot.common.web.response.JsonResult;
+import net.guhya.boot.module.board.data.BoardData;
 
 @RestController
 @RequestMapping(value = "/v1/boards", 
@@ -30,72 +31,47 @@ public class BoardRestController extends AbstractRestController {
 
 	private static Logger log = LoggerFactory.getLogger(BoardRestController.class);
 	
-	private GenericService<Box> boardService;
+	private GenericService<BoardData> boardService;
 	
-	public BoardRestController(@Qualifier("genericService") GenericService<Box> boardService) {
+	public BoardRestController(@Qualifier("genericService") GenericService<BoardData> boardService) {
 		this.boardService = boardService;
 		this.boardService.setEntityName("board");
 		
-		log.info("Board rest controller initialized");
+		log.info("BoardData rest controller initialized");
 	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public JsonResult list(Box paramBox) throws Exception {
+	public JsonListResult<BoardData> list(Box paramBox) {
 		int count = boardService.countList(paramBox.getMap());
 		listPaging(paramBox, count);
-		List<Map<String, Object>> list = boardService.list(paramBox.getMap());
-		JsonResult result = new JsonResult(count, paramBox.getInt(PARAM_PAGE), list);
-		
-		return result;
+		List<BoardData> list = boardService.list(paramBox.getMap());
+		return new JsonListResult<BoardData>(getPagingData(paramBox), list);
 	}
 
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
-	public JsonResult select(@PathVariable String id, Box paramBox) throws Exception{
-		paramBox.put("seq", id);
-		Map<String, Object> item = boardService.select(paramBox.getMap());
-		if(item != null) {
-			return new JsonResult(item);
-		}
-		
-		throw new ItemNotFoundException("Item not found");
+	public JsonResult<BoardData> select(@PathVariable String id) {
+		BoardData item = boardService.select(new BoardData(Long.valueOf(id)));
+		return new JsonResult<BoardData>(item);
 	}
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public JsonResult insert(@RequestBody Map<String, Object> body) throws Exception {
-		int result = boardService.insert(body);
-		
-		if(result > 0) {
-			Box paramBox = new Box();
-			paramBox.put("seq", result);
-			Map<String, Object> item = boardService.select(paramBox.getMap());
-			return new JsonResult(item);
-		}
-		
-		throw new GeneralRestException("Operation failed");
+	public JsonResult<BoardData> insert(@Valid @RequestBody BoardData dto) {
+		boardService.insert(dto);
+		BoardData item = boardService.select(dto);
+		return new JsonResult<BoardData>(item);
 	}
 	
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public JsonResult update(@RequestBody Map<String, Object> body) throws Exception {
-		int result = boardService.update(body);
-		
-		if(result > 0) {
-			Map<String, Object> item = boardService.select(body);
-			return new JsonResult(item);
-		}
-		
-		throw new GeneralRestException("Operation failed");
+	public JsonResult<BoardData> update(@Valid @RequestBody BoardData dto) {
+		boardService.update(dto);
+		BoardData item = boardService.select(dto);
+		return new JsonResult<BoardData>(item);
 	}
 
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
-	public JsonResult delete(@RequestBody Map<String, Object> body) throws Exception {
-		int result = boardService.delete(body);
-	
-		if(result > 0) {
-			Map<String, Object> item = body;
-			return new JsonResult(item);
-		}		
-		
-		throw new GeneralRestException("Operation failed");
+	public JsonResult<BoardData> delete(@RequestBody BoardData dto) {
+		boardService.delete(dto);
+		return new JsonResult<BoardData>(dto);
 	}
 	
 }

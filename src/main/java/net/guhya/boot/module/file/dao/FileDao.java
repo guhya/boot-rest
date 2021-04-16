@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package net.guhya.boot.module.user.dao;
+package net.guhya.boot.module.file.dao;
 
 import java.util.List;
 
@@ -22,17 +21,17 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import net.guhya.boot.common.dao.GenericDao;
-import net.guhya.boot.module.user.data.UserData;
+import net.guhya.boot.module.file.data.FileData;
 
-@Repository(value = "userDao")
-public class UserDao extends GenericDao<UserData>{
-	
-	public UserDao(SqlSession sqlSession) {
+@Repository(value = "fileDao")
+public class FileDao extends GenericDao<FileData> {
+
+	public FileDao(SqlSession sqlSession) {
 		super(sqlSession);
 	}
 
-	public List<String> listUserRoles(UserData dto) throws Exception {
-		return sqlSession.selectList(namespace + "listUserRoles", dto);
+	public List<FileData> selectByChannelCategoryOwner(FileData dto) throws Exception {
+		return sqlSession.selectList(namespace + "selectByChannelCategoryOwner", dto);
 	}
-	
+
 }
