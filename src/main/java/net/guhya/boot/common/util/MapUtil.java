@@ -16,10 +16,14 @@ public class MapUtil {
 		return NumberUtil.toInt(map.get(key));
 	}
 	
+	public static long getLong(Map<?, ?> map, Object key) {
+		return NumberUtil.toLong(map.get(key));
+	}
+	
 	public static double getDouble(Map<?, ?> map, Object key) {
 		return NumberUtil.toDouble(map.get(key));
 	}
-	
+
 	public static BigDecimal getBigDecimal(Map<?, ?> map, Object key) {
 		return NumberUtil.toBigDecimal(map.get(key));
 	}

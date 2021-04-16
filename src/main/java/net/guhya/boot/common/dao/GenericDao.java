@@ -6,8 +6,10 @@ import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
+import net.guhya.boot.common.data.AbstractData;
+
 @Repository(value = "genericDao")
-public class GenericDao<T> {
+public class GenericDao<T extends AbstractData> {
 	
 	protected SqlSession sqlSession;
 	protected String namespace = "";
@@ -25,7 +27,7 @@ public class GenericDao<T> {
 	 * @param map
 	 * @return
 	 */
-	public List<Map<String, Object>> list(Map<String, Object> map) {
+	public List<T> list(Map<String, Object> map) {
 		return sqlSession.selectList(namespace + "list", map);
 	}
 
@@ -43,8 +45,8 @@ public class GenericDao<T> {
 	 * @param parameterMap
 	 * @return
 	 */
-	public Map<String, Object> select(Map<String, Object> parameterMap) {
-		return sqlSession.selectOne(namespace + "select", parameterMap);
+	public T select(T dto) {
+		return sqlSession.selectOne(namespace + "select", dto);
 	}
 	
 	/**
@@ -52,11 +54,9 @@ public class GenericDao<T> {
 	 * @param parameterMap
 	 * @return
 	 */
-	public int insert(Map<String, Object> parameterMap) {
-		Map<String, Object> map = parameterMap;
-		int seq = sqlSession.insert(namespace + "insert", map);
-		seq = map.get("seq") == null ? seq : Integer.parseInt(map.get("seq").toString());
-		
+	public long insert(T dto) {
+		int r = sqlSession.insert(namespace + "insert", dto);
+		long seq = dto.getSeq() > 0 ? dto.getSeq() : r;
 		return seq;
 	}
 	
@@ -65,8 +65,8 @@ public class GenericDao<T> {
 	 * @param parameterMap
 	 * @return
 	 */
-	public int update(Map<String, Object> parameterMap) {
-		return sqlSession.update(namespace + "update", parameterMap);
+	public int update(T dto) {
+		return sqlSession.update(namespace + "update", dto);
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class GenericDao<T> {
 	 * @param parameterMap
 	 * @return
 	 */
-	public int delete(Map<String, Object> parameterMap) {
-		return sqlSession.delete(namespace + "delete", parameterMap);
+	public int delete(T dto) {
+		return sqlSession.delete(namespace + "delete", dto);
 	}
 }

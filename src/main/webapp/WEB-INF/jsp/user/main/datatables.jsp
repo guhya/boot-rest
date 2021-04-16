@@ -58,7 +58,7 @@
 					</div>
 					<div class="form-row">
 						<div class="col-md-12 mb-3">
-							<label>Sub Title</label> 
+							<label>Subtitle</label> 
 							<input type="text" class="form-control" name="subtitle" id="subtitle" value="" required>
 						</div>
 					</div>
@@ -77,13 +77,13 @@
 					<input type="submit" name="submitHandler" style="display:none"/>
 				</form>
 				<form id="fileForm" name="fileForm" enctype="multipart/form-data">
-					<div class="form-row" id="mainImageConGroup">
-						<div class="col-md-3 mb-3">
-							<img id="mainImageCon" src="" class="img-thumbnail">						
-              			</div>
-					</div>
-					<div class="form-row" id="mainImageGroup">
-						<div class="col-md-12 mb-3">
+					<div class="form-row">
+						<div class="col-md-12">
+							<div class="row">
+								<div class="col-md-3 mb-3" id="mainImageConGroup">
+									<img id="mainImageCon" src="" class="img-thumbnail">						
+		              			</div>
+	              			</div>
                 			<input type="file" id="mainImage" class="form-control-file" name="mainImage">
               			</div>
 					</div>
@@ -97,38 +97,13 @@
 </div>
 
 <script>
-	var authHeader = getCookie("token");
-	var checkHeader = function(req){
-		if(authHeader == undefined || authHeader == ""){
-			return $.ajax({
-		        dataType : "JSON",
-		        method : "POST",
-		        global : false,
-		        contentType : "application/json",
-		        url : "/v1/users/login",
-		        beforeSend : function (xhr) {
-					console.log("Logging in");
-				},		        
-		        data : JSON.stringify({
-		        	"username" : "username",
-		        	"password" : "admin"
-		        }),
-		        success : function(res){
-		        	authHeader = res.data.attributes.token;
-		        	setCookie("token", authHeader, 1);
-		        }
-			});
-		}else{
-			if (req != undefined) req.setRequestHeader("Authorization", "Bearer " + authHeader.trim());
-			return $.Deferred().resolve().promise();
-		}
-	};
-	
 	var resetForm = function(){
 		document.inputForm.reset();
 		document.fileForm.reset();
     	$("#mainImageCon").attr("src", "");
 		$("#mainImageConGroup").show();
+		$("#inputForm .invalid-feedback").remove();
+		$("#inputForm .is-invalid").removeClass("is-invalid");
 	};
 
 	var doEdit = function(id){
@@ -139,13 +114,15 @@
 	        contentType : "application/json",
 	        url : "/v1/boards/get/"+id,
 	        success : function(res){
-	        	$.each(res.data.attributes, function(key, val) {
+	        	$.each(res.data, function(key, val) {
 	        		if($("#"+key).prop("type") != "file"){
 	        			$("#"+key).val(val);
 	        		}
         	    });
-	        	if(res.data.attributes.mainImage != undefined){
-		        	$("#mainImageCon").attr("src", "/public/" + res.data.attributes.mainImage);
+	        	CKEDITOR.instances["content"].setData(res.data.content);
+	        	var files = res.data.files;
+	        	if(files[0] != undefined){
+		        	$("#mainImageCon").attr("src", "/public/board/" + files[0].name);
 	        		$("#mainImageConGroup").show();
 	        	}else{
 	        		$("#mainImageConGroup").hide();
@@ -192,9 +169,8 @@
 
 		doSave().then(function(res){
 			var data = {
-					"ownerSeq" : res.data.attributes.seq,
-					"channel" : "board",
-					"category" : "mainImage"
+					"ownerSeq" : res.data.seq,
+					"channel" : "board"
 			};
 			doUpload(data).always(function(res){
 				console.log("Cleaning up, doesn't matter if error");
@@ -203,14 +179,19 @@
 			});
 		});
 	};
-	
+
+	var ewdebug = {};
 	var doSave = function(){
+		$("#inputForm .invalid-feedback").remove();
+		$("#inputForm .is-invalid").removeClass("is-invalid");
+		
 		var data = {};
 		var arr = $("#inputForm").serializeArray();
 		for(el in arr){
 			if(arr[el].name == "seq" && arr[el].value == "") continue;
 			data[arr[el].name] = arr[el].value;
 		}
+		data.content = CKEDITOR.instances["content"].getData();
 		
 		var url = "";
 		if(data.seq != undefined)
@@ -226,7 +207,20 @@
 	        data : JSON.stringify(data),
 	        success : function(res){
 	        	console.log("Saving data success");
-	        }
+	        },
+	        error : function(res){
+		        ewdebug = res;
+		        if(res.status == 400){
+			        var data = ewdebug.responseJSON.data;
+					for(key in data){
+						if (data.hasOwnProperty(key)){
+							var $el = $("#inputForm").find("#"+key);
+							$el.addClass("is-invalid");
+							$el.after("<div class='invalid-feedback'>"+data[key]+"</div>");
+						}
+					}
+			    }
+		    }
 		});
 	};
 	
@@ -258,28 +252,15 @@
 		});
 	};
 	
-	$.ajaxSetup({
-		beforeSend : function (req) {
-			checkHeader(req);
-		}
-	});
-	
 	var ewdebug = {};
-
 	var dt;
+	var dp = new DOMParser();
 	var cols = [
 		{"data" : "seq", "className" : "d-none d-xl-table-cell", "width": "5%"},
 		{"data" : "title", "width": "15%"},
 		{"data" : "subtitle", "className" : "d-none d-xl-table-cell", "width": "10%"},
 		{"data" : "summary", "className" : "d-none d-xl-table-cell", "width": "15%"},
-		{
-			"className" : "d-none d-md-table-cell", 
-			"width": "30%",
-			"render" : function (data, type, row, meta) {
-				var val = row.content.length > 35 ? row.content.substring(0, 35) + "..." : row.content;
-				return val;
-			}
-		},
+		{"data" : "content", "className" : "d-none d-md-table-cell", "width": "30%"},
 		{"data" : "author", "className" : "text-center d-none d-xl-table-cell", "width": "5%"},
 		{"data" : "regDate", "className" : "text-center d-none d-xl-table-cell", "width": "10%"},
 		{
@@ -300,7 +281,8 @@
 				    el += "<a tabindex='0' title='Delete' data-toggle='popover' data-placement='left' data-content='"+pd+"' class='btn btn-danger'>Delete</a>";
 				
 				return el;
-			}
+			},
+			"orderable" : false
 		},
 	];
 	
@@ -309,7 +291,7 @@
 			dt = $("#myTable").DataTable({
 				dom : 	"<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
 						"<'row'<'col-sm-12'tr>>" +
-						"<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+						"<'row'<'col-sm-12 col-md-6'i><'mt-2 col-sm-12 col-md-6'p>>",
 				pageLength 	: 10,
 				lengthMenu 	: [5, 10, 20, 50, 100],
 				bProcessing : true,
@@ -343,7 +325,18 @@
 							var json = JSON.parse(data);
 							json.recordsTotal = json.meta.totalRecords;
 							json.recordsFiltered = json.meta.totalRecords;
-							json.data = json.data.attributes;
+							for(key in json.data){
+								var d = new Date(json.data[key].regDate);
+								let [month, date, year] = d.toLocaleDateString("en-US").split("/");
+								month = ("0" + month).substring(("0" + month).length -2);
+								date = ("0" + date).substring(("0" + date).length -2);
+								let [hour, minute, second] = new Date().toLocaleTimeString("en-US").split(/:| /);
+								json.data[key].regDate = year + "." + month + "." + date + " " + hour + ":" + minute + ":" + second;
+
+								var content = dp.parseFromString(json.data[key].content, "text/html");
+								content = content.body.textContent || "";
+								json.data[key].content = content.length > 35 ? content.substring(0, 35) + "..." : content;
+							}
 							return JSON.stringify(json);
 						}
 					})
@@ -361,6 +354,9 @@
 					});
 			    },
 			});
+		});
+		CKEDITOR.replace("content", {
+		      height: 150
 		});
 
 	});

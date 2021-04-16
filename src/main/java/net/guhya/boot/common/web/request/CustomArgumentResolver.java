@@ -18,7 +18,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import net.guhya.boot.common.data.Box;
 import net.guhya.boot.common.web.AbstractRestController;
 import net.guhya.boot.common.web.WebUtil;
 
